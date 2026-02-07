@@ -62,15 +62,8 @@
                     <div class="stat-icon">
                         <i class="fas fa-university"></i>
                     </div>
-                    <h3 class="stat-number">85%</h3>
+                    <h3 class="stat-number">84%</h3>
                     <p>University Enrollment</p>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-briefcase"></i>
-                    </div>
-                    <h3 class="stat-number">90%</h3>
-                    <p>Employment Rate</p>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon">
@@ -81,183 +74,300 @@
                 </div>
             </div>
 
-            <!-- Recent Graduating Classes -->
+            <!-- Graduating Classes -->
             <div class="class-section">
                 <div class="section-header">
-                    <h2>Recent Graduating Classes</h2>
+                    <h2>Graduating Classes (2016-2025)</h2>
                     <div class="underline"></div>
                 </div>
 
                 <!-- Class of 2025 -->
                 <div class="graduating-class">
-                    <h3 class="class-year">Class of 2025</h3>
-                    <div class="graduates-grid">
-                        <div class="graduate-card">
-                            <div class="graduate-image">
-                                <img src="images/graduate-placeholder.jpg" alt="Graduate">
+                    <div class="class-photo">
+                        <div class="class-slider">
+                            <div class="slider-images">
+                                <img src="images/class-2025-1.jpg" alt="Class of 2025 - Image 1" class="class-image active">
+                                <img src="images/class-2025-2.jpg" alt="Class of 2025 - Image 2" class="class-image">
+                                <img src="images/class-2025-3.jpg" alt="Class of 2025 - Image 3" class="class-image">
                             </div>
-                            <div class="graduate-info">
-                                <h4>[Graduate Name]</h4>
-                                <p class="achievement">Valedictorian</p>
-                                <p class="destination">University of Liberia - Engineering</p>
-                            </div>
-                        </div>
-
-                        <div class="graduate-card">
-                            <div class="graduate-image">
-                                <img src="images/graduate-placeholder.jpg" alt="Graduate">
-                            </div>
-                            <div class="graduate-info">
-                                <h4>[Graduate Name]</h4>
-                                <p class="achievement">Salutatorian</p>
-                                <p class="destination">Cuttington University - Medicine</p>
+                            <button class="slider-btn prev" onclick="moveSlide(this, -1)">❮</button>
+                            <button class="slider-btn next" onclick="moveSlide(this, 1)">❯</button>
+                            <div class="slider-dots">
+                                <span class="dot active" onclick="currentSlide(this, 0)"></span>
+                                <span class="dot" onclick="currentSlide(this, 1)"></span>
+                                <span class="dot" onclick="currentSlide(this, 2)"></span>
                             </div>
                         </div>
-
-                        <div class="graduate-card">
-                            <div class="graduate-image">
-                                <img src="images/graduate-placeholder.jpg" alt="Graduate">
-                            </div>
-                            <div class="graduate-info">
-                                <h4>[Graduate Name]</h4>
-                                <p class="achievement">Honor Graduate</p>
-                                <p class="destination">AME University - Business</p>
-                            </div>
-                        </div>
-
-                        <div class="graduate-card">
-                            <div class="graduate-image">
-                                <img src="images/graduate-placeholder.jpg" alt="Graduate">
-                            </div>
-                            <div class="graduate-info">
-                                <h4>[Graduate Name]</h4>
-                                <p class="achievement">Honor Graduate</p>
-                                <p class="destination">Tubman University - Education</p>
-                            </div>
+                    </div>
+                    <div class="class-info">
+                        <h3 class="class-year">Class of 2025</h3>
+                        <div class="class-details">
+                            <p><strong>Class Name:</strong> [Class Name]</p>
+                            <p><strong>Valedictorian:</strong> [Name]</p>
+                            <p><strong>Salutatorian:</strong> [Name]</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Class of 2024 -->
                 <div class="graduating-class">
-                    <h3 class="class-year">Class of 2024</h3>
-                    <div class="graduates-grid">
-                        <div class="graduate-card">
-                            <div class="graduate-image">
-                                <img src="images/graduate-placeholder.jpg" alt="Graduate">
+                    <div class="class-photo">
+                        <div class="class-slider">
+                            <div class="slider-images">
+                                <img src="images/class-2024-1.jpg" alt="Class of 2024 - Image 1" class="class-image active">
+                                <img src="images/class-2024-2.jpg" alt="Class of 2024 - Image 2" class="class-image">
+                                <img src="images/class-2024-3.jpg" alt="Class of 2024 - Image 3" class="class-image">
                             </div>
-                            <div class="graduate-info">
-                                <h4>[Graduate Name]</h4>
-                                <p class="achievement">Valedictorian</p>
-                                <p class="destination">University of Liberia - Computer Science</p>
-                            </div>
-                        </div>
-
-                        <div class="graduate-card">
-                            <div class="graduate-image">
-                                <img src="images/graduate-placeholder.jpg" alt="Graduate">
-                            </div>
-                            <div class="graduate-info">
-                                <h4>[Graduate Name]</h4>
-                                <p class="achievement">Salutatorian</p>
-                                <p class="destination">Cuttington University - Law</p>
+                            <button class="slider-btn prev" onclick="moveSlide(this, -1)">❮</button>
+                            <button class="slider-btn next" onclick="moveSlide(this, 1)">❯</button>
+                            <div class="slider-dots">
+                                <span class="dot active" onclick="currentSlide(this, 0)"></span>
+                                <span class="dot" onclick="currentSlide(this, 1)"></span>
+                                <span class="dot" onclick="currentSlide(this, 2)"></span>
                             </div>
                         </div>
+                    </div>
+                    <div class="class-info">
+                        <h3 class="class-year">Class of 2024</h3>
+                        <div class="class-details">
+                            <p><strong>Class Name:</strong> [Class Name]</p>
+                            <p><strong>Valedictorian:</strong> [Name]</p>
+                            <p><strong>Salutatorian:</strong> [Name]</p>
+                        </div>
+                    </div>
+                </div>
 
-                        <div class="graduate-card">
-                            <div class="graduate-image">
-                                <img src="images/graduate-placeholder.jpg" alt="Graduate">
+                <!-- Class of 2023 -->
+                <div class="graduating-class">
+                    <div class="class-photo">
+                        <div class="class-slider">
+                            <div class="slider-images">
+                                <img src="images/class-2023-1.jpg" alt="Class of 2023 - Image 1" class="class-image active">
+                                <img src="images/class-2023-2.jpg" alt="Class of 2023 - Image 2" class="class-image">
+                                <img src="images/class-2023-3.jpg" alt="Class of 2023 - Image 3" class="class-image">
                             </div>
-                            <div class="graduate-info">
-                                <h4>[Graduate Name]</h4>
-                                <p class="achievement">Honor Graduate</p>
-                                <p class="destination">African Methodist Episcopal University</p>
+                            <button class="slider-btn prev" onclick="moveSlide(this, -1)">❮</button>
+                            <button class="slider-btn next" onclick="moveSlide(this, 1)">❯</button>
+                            <div class="slider-dots">
+                                <span class="dot active" onclick="currentSlide(this, 0)"></span>
+                                <span class="dot" onclick="currentSlide(this, 1)"></span>
+                                <span class="dot" onclick="currentSlide(this, 2)"></span>
                             </div>
                         </div>
+                    </div>
+                    <div class="class-info">
+                        <h3 class="class-year">Class of 2023</h3>
+                        <div class="class-details">
+                            <p><strong>Class Name:</strong> [Class Name]</p>
+                            <p><strong>Valedictorian:</strong> [Name]</p>
+                            <p><strong>Salutatorian:</strong> [Name]</p>
+                        </div>
+                    </div>
+                </div>
 
-                        <div class="graduate-card">
-                            <div class="graduate-image">
-                                <img src="images/graduate-placeholder.jpg" alt="Graduate">
+                <!-- Class of 2022 -->
+                <div class="graduating-class">
+                    <div class="class-photo">
+                        <div class="class-slider">
+                            <div class="slider-images">
+                                <img src="images/class-2022-1.jpg" alt="Class of 2022 - Image 1" class="class-image active">
+                                <img src="images/class-2022-2.jpg" alt="Class of 2022 - Image 2" class="class-image">
+                                <img src="images/class-2022-3.jpg" alt="Class of 2022 - Image 3" class="class-image">
                             </div>
-                            <div class="graduate-info">
-                                <h4>[Graduate Name]</h4>
-                                <p class="achievement">Honor Graduate</p>
-                                <p class="destination">Employed - Government Ministry</p>
+                            <button class="slider-btn prev" onclick="moveSlide(this, -1)">❮</button>
+                            <button class="slider-btn next" onclick="moveSlide(this, 1)">❯</button>
+                            <div class="slider-dots">
+                                <span class="dot active" onclick="currentSlide(this, 0)"></span>
+                                <span class="dot" onclick="currentSlide(this, 1)"></span>
+                                <span class="dot" onclick="currentSlide(this, 2)"></span>
                             </div>
+                        </div>
+                    </div>
+                    <div class="class-info">
+                        <h3 class="class-year">Class of 2022</h3>
+                        <div class="class-details">
+                            <p><strong>Class Name:</strong> [Class Name]</p>
+                            <p><strong>Valedictorian:</strong> [Name]</p>
+                            <p><strong>Salutatorian:</strong> [Name]</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Class of 2021 -->
+                <div class="graduating-class">
+                    <div class="class-photo">
+                        <div class="class-slider">
+                            <div class="slider-images">
+                                <img src="images/class-2021-1.jpg" alt="Class of 2021 - Image 1" class="class-image active">
+                                <img src="images/class-2021-2.jpg" alt="Class of 2021 - Image 2" class="class-image">
+                                <img src="images/class-2021-3.jpg" alt="Class of 2021 - Image 3" class="class-image">
+                            </div>
+                            <button class="slider-btn prev" onclick="moveSlide(this, -1)">❮</button>
+                            <button class="slider-btn next" onclick="moveSlide(this, 1)">❯</button>
+                            <div class="slider-dots">
+                                <span class="dot active" onclick="currentSlide(this, 0)"></span>
+                                <span class="dot" onclick="currentSlide(this, 1)"></span>
+                                <span class="dot" onclick="currentSlide(this, 2)"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="class-info">
+                        <h3 class="class-year">Class of 2021</h3>
+                        <div class="class-details">
+                            <p><strong>Class Name:</strong> [Class Name]</p>
+                            <p><strong>Valedictorian:</strong> [Name]</p>
+                            <p><strong>Salutatorian:</strong> [Name]</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Class of 2020 -->
+                <div class="graduating-class">
+                    <div class="class-photo">
+                        <div class="class-slider">
+                            <div class="slider-images">
+                                <img src="images/class-2020-1.jpg" alt="Class of 2020 - Image 1" class="class-image active">
+                                <img src="images/class-2020-2.jpg" alt="Class of 2020 - Image 2" class="class-image">
+                                <img src="images/class-2020-3.jpg" alt="Class of 2020 - Image 3" class="class-image">
+                            </div>
+                            <button class="slider-btn prev" onclick="moveSlide(this, -1)">❮</button>
+                            <button class="slider-btn next" onclick="moveSlide(this, 1)">❯</button>
+                            <div class="slider-dots">
+                                <span class="dot active" onclick="currentSlide(this, 0)"></span>
+                                <span class="dot" onclick="currentSlide(this, 1)"></span>
+                                <span class="dot" onclick="currentSlide(this, 2)"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="class-info">
+                        <h3 class="class-year">Class of 2020</h3>
+                        <div class="class-details">
+                            <p><strong>Class Name:</strong> [Class Name]</p>
+                            <p><strong>Valedictorian:</strong> [Name]</p>
+                            <p><strong>Salutatorian:</strong> [Name]</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Class of 2019 -->
+                <div class="graduating-class">
+                    <div class="class-photo">
+                        <div class="class-slider">
+                            <div class="slider-images">
+                                <img src="images/class-2019-1.jpg" alt="Class of 2019 - Image 1" class="class-image active">
+                                <img src="images/class-2019-2.jpg" alt="Class of 2019 - Image 2" class="class-image">
+                                <img src="images/class-2019-3.jpg" alt="Class of 2019 - Image 3" class="class-image">
+                            </div>
+                            <button class="slider-btn prev" onclick="moveSlide(this, -1)">❮</button>
+                            <button class="slider-btn next" onclick="moveSlide(this, 1)">❯</button>
+                            <div class="slider-dots">
+                                <span class="dot active" onclick="currentSlide(this, 0)"></span>
+                                <span class="dot" onclick="currentSlide(this, 1)"></span>
+                                <span class="dot" onclick="currentSlide(this, 2)"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="class-info">
+                        <h3 class="class-year">Class of 2019</h3>
+                        <div class="class-details">
+                            <p><strong>Class Name:</strong> [Class Name]</p>
+                            <p><strong>Valedictorian:</strong> [Name]</p>
+                            <p><strong>Salutatorian:</strong> [Name]</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Class of 2018 -->
+                <div class="graduating-class">
+                    <div class="class-photo">
+                        <div class="class-slider">
+                            <div class="slider-images">
+                                <img src="images/class-2018-1.jpg" alt="Class of 2018 - Image 1" class="class-image active">
+                                <img src="images/class-2018-2.jpg" alt="Class of 2018 - Image 2" class="class-image">
+                                <img src="images/class-2018-3.jpg" alt="Class of 2018 - Image 3" class="class-image">
+                            </div>
+                            <button class="slider-btn prev" onclick="moveSlide(this, -1)">❮</button>
+                            <button class="slider-btn next" onclick="moveSlide(this, 1)">❯</button>
+                            <div class="slider-dots">
+                                <span class="dot active" onclick="currentSlide(this, 0)"></span>
+                                <span class="dot" onclick="currentSlide(this, 1)"></span>
+                                <span class="dot" onclick="currentSlide(this, 2)"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="class-info">
+                        <h3 class="class-year">Class of 2018</h3>
+                        <div class="class-details">
+                            <p><strong>Class Name:</strong> [Class Name]</p>
+                            <p><strong>Valedictorian:</strong> [Name]</p>
+                            <p><strong>Salutatorian:</strong> [Name]</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Class of 2017 -->
+                <div class="graduating-class">
+                    <div class="class-photo">
+                        <div class="class-slider">
+                            <div class="slider-images">
+                                <img src="images/class-2017-1.jpg" alt="Class of 2017 - Image 1" class="class-image active">
+                                <img src="images/class-2017-2.jpg" alt="Class of 2017 - Image 2" class="class-image">
+                                <img src="images/class-2017-3.jpg" alt="Class of 2017 - Image 3" class="class-image">
+                            </div>
+                            <button class="slider-btn prev" onclick="moveSlide(this, -1)">❮</button>
+                            <button class="slider-btn next" onclick="moveSlide(this, 1)">❯</button>
+                            <div class="slider-dots">
+                                <span class="dot active" onclick="currentSlide(this, 0)"></span>
+                                <span class="dot" onclick="currentSlide(this, 1)"></span>
+                                <span class="dot" onclick="currentSlide(this, 2)"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="class-info">
+                        <h3 class="class-year">Class of 2017</h3>
+                        <div class="class-details">
+                            <p><strong>Class Name:</strong> [Class Name]</p>
+                            <p><strong>Valedictorian:</strong> [Name]</p>
+                            <p><strong>Salutatorian:</strong> [Name]</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Class of 2016 -->
+                <div class="graduating-class">
+                    <div class="class-photo">
+                        <div class="class-slider">
+                            <div class="slider-images">
+                                <img src="images/class-2016-1.jpg" alt="Class of 2016 - Image 1" class="class-image active">
+                                <img src="images/class-2016-2.jpg" alt="Class of 2016 - Image 2" class="class-image">
+                                <img src="images/class-2016-3.jpg" alt="Class of 2016 - Image 3" class="class-image">
+                            </div>
+                            <button class="slider-btn prev" onclick="moveSlide(this, -1)">❮</button>
+                            <button class="slider-btn next" onclick="moveSlide(this, 1)">❯</button>
+                            <div class="slider-dots">
+                                <span class="dot active" onclick="currentSlide(this, 0)"></span>
+                                <span class="dot" onclick="currentSlide(this, 1)"></span>
+                                <span class="dot" onclick="currentSlide(this, 2)"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="class-info">
+                        <h3 class="class-year">Class of 2016</h3>
+                        <div class="class-details">
+                            <p><strong>Class Name:</strong> [Class Name]</p>
+                            <p><strong>Valedictorian:</strong> [Name]</p>
+                            <p><strong>Salutatorian:</strong> [Name]</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Alumni Spotlight -->
-            <div class="alumni-spotlight">
-                <div class="section-header">
-                    <h2>Distinguished Alumni</h2>
-                    <div class="underline"></div>
-                </div>
-
-                <div class="spotlight-grid">
-                    <div class="spotlight-card">
-                        <div class="spotlight-content">
-                            <div class="spotlight-image">
-                                <img src="images/alumni-placeholder.jpg" alt="Alumni">
-                            </div>
-                            <div class="spotlight-info">
-                                <h4>[Alumni Name]</h4>
-                                <p class="graduation-year">Class of 2015</p>
-                                <p class="current-position">Medical Doctor, JFK Hospital</p>
-                                <p class="testimonial">
-                                    "Brighter Day ELEM, Jr & Sr High School laid the foundation for my success. The dedication 
-                                    of the teachers and the quality of education I received prepared me well 
-                                    for university and my medical career."
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="spotlight-card">
-                        <div class="spotlight-content">
-                            <div class="spotlight-image">
-                                <img src="images/alumni-placeholder.jpg" alt="Alumni">
-                            </div>
-                            <div class="spotlight-info">
-                                <h4>[Alumni Name]</h4>
-                                <p class="graduation-year">Class of 2012</p>
-                                <p class="current-position">Civil Engineer, Ministry of Public Works</p>
-                                <p class="testimonial">
-                                    "The values and knowledge I gained at Brighter Day ELEM, Jr & Sr High School have been 
-                                    instrumental in my professional journey. I'm proud to be an alumnus of 
-                                    this great institution."
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="spotlight-card">
-                        <div class="spotlight-content">
-                            <div class="spotlight-image">
-                                <img src="images/alumni-placeholder.jpg" alt="Alumni">
-                            </div>
-                            <div class="spotlight-info">
-                                <h4>[Alumni Name]</h4>
-                                <p class="graduation-year">Class of 2018</p>
-                                <p class="current-position">Entrepreneur & Business Owner</p>
-                                <p class="testimonial">
-                                    "Brighter Day ELEM, Jr & Sr High School taught me more than academics - it taught me 
-                                    leadership, integrity, and perseverance. These qualities have been key 
-                                    to my success in business."
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Career Paths -->
+            <!-- Where Our Graduates Are -->
             <div class="career-paths">
                 <div class="section-header">
-                    <h2>Where Our Graduates Are</h2>
+                    <h2>Where Our Graduates Are?</h2>
                     <div class="underline"></div>
+                    <p>Our alumni have pursued successful careers in various fields.</p>
                 </div>
                 <div class="paths-grid">
                     <div class="path-item">
@@ -268,7 +378,12 @@
                     <div class="path-item">
                         <i class="fas fa-balance-scale"></i>
                         <h4>Law</h4>
-                        <p>Lawyers, Judges, Legal Advisors</p>
+                        <p>Lawyers, Legal Advisors</p>
+                    </div>
+                    <div class="path-item">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <h4>Education</h4>
+                        <p>Teachers, Professors</p>
                     </div>
                     <div class="path-item">
                         <i class="fas fa-laptop-code"></i>
@@ -276,22 +391,73 @@
                         <p>Software Developers, IT Specialists</p>
                     </div>
                     <div class="path-item">
-                        <i class="fas fa-chalkboard-teacher"></i>
-                        <h4>Education</h4>
-                        <p>Teachers, Professors, Administrators</p>
-                    </div>
-                    <div class="path-item">
                         <i class="fas fa-building"></i>
                         <h4>Business</h4>
-                        <p>Entrepreneurs, Managers, Accountants</p>
+                        <p>Entrepreneurs, Accountants</p>
                     </div>
                     <div class="path-item">
-                        <i class="fas fa-landmark"></i>
-                        <h4>Government</h4>
-                        <p>Civil Servants, Policy Makers</p>
+                        <i class="fas fa-hammer"></i>
+                        <h4>Engineering</h4>
+                        <p>Civil Engineers, Architects</p>
                     </div>
                 </div>
             </div>
+
+            <!-- Brighter Day Alumni Association -->
+            <div class="alumni-association">
+                <div class="section-header">
+                    <h2>Brighter Day Alumni Association - BDAA</h2>
+                    <div class="underline"></div>
+                </div>
+
+                <div class="association-message">
+                    <div class="message-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="message-content">
+                        <h3>A Message from the BDAA</h3>
+                        <p>
+                            <strong>We are the Brighter Day Alumni Association (BDAA) - a united community of graduates who have walked 
+                            these hallowed halls and emerged as leaders, innovators, and change-makers in our society. Our bond 
+                            transcends time, connecting generations of excellence from 2016 to 2025 and beyond.</strong>
+                        </p>
+                        <p>
+                            <strong>At Brighter Day, we didn't just receive an education; we were forged with character, equipped with 
+                            knowledge, and empowered with the confidence to transform our world. Today, we stand in various fields - 
+                            healthcare professionals saving lives, educators shaping minds, engineers building infrastructure, 
+                            lawyers upholding justice, and entrepreneurs creating opportunities.</strong>
+                        </p>
+                        <p>
+                            <strong>Our commitment is unwavering: To give back to the institution that gave us our foundation. 
+                            To mentor current students and guide them toward their destinies. To be ambassadors of excellence wherever 
+                            we go. To maintain the legacy of integrity, hard work, and excellence that defines every Brighter Day graduate.</strong>
+                        </p>
+                        <p class="call-to-action">
+                            <strong><em>"Once a Brighter Day student, always a Brighter Day champion. Together, we rise. Together, we shine. 
+                            Together, we illuminate the path for the next generation."</em></strong>
+                        </p>
+                        <div class="association-values">
+                            <div class="value-item">
+                                <i class="fas fa-star"></i>
+                                <span>Excellence</span>
+                            </div>
+                            <div class="value-item">
+                                <i class="fas fa-handshake"></i>
+                                <span>Unity</span>
+                            </div>
+                            <div class="value-item">
+                                <i class="fas fa-lightbulb"></i>
+                                <span>Innovation</span>
+                            </div>
+                            <div class="value-item">
+                                <i class="fas fa-heart"></i>
+                                <span>Service</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </section>
 
@@ -301,7 +467,7 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>Brighter Day ELEM, Jr & Sr High School</h3>
-                    <p class="motto">Empowering Minds, Building Futures</p>
+                    <p class="motto"><strong>MOTTO:</strong> Learning To Teach Others</p>
                 </div>
                 <div class="footer-section">
                     <h3>Quick Links</h3>
@@ -330,6 +496,7 @@
             </div>
             <div class="footer-bottom">
                 <p>&copy; 2026 Brighter Day ELEM, Jr & Sr High School. All rights reserved.</p>
+                <p>Powered by <strong>Tech Bridge Liberia-TBL</strong></p>
             </div>
         </div>
     </footer>

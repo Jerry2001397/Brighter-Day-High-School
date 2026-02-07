@@ -169,4 +169,4 @@ For technical support or website updates, contact:
 
 ---
 
-**BRIDAPS - Empowering minds, Building futures**
+**BRIDAPS - MOTTO: Learning To Teach Others**
