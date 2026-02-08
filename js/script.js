@@ -280,4 +280,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// Toggle Class Members List
+function toggleMembers(button) {
+    const membersList = button.nextElementSibling;
+    const icon = button.querySelector('i');
+    
+    if (membersList.style.display === 'none' || membersList.style.display === '') {
+        membersList.style.display = 'block';
+        button.innerHTML = '<i class="fas fa-chevron-up"></i> Hide graduates of this class';
+    } else {
+        membersList.style.display = 'none';
+        button.innerHTML = '<i class="fas fa-chevron-down"></i> View graduates of this class';
+    }
+}
+
 console.log('Brighter Day School website loaded successfully!');
