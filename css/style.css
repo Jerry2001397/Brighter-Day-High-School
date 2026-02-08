@@ -1003,13 +1003,15 @@ body {
     padding: 2rem;
     background: var(--white);
     border-radius: 15px;
-    box-shadow: 0 5px 20px var(--shadow);
+    border: 3px solid var(--primary-yellow);
+    box-shadow: 0 5px 20px var(--shadow), 0 0 0 1px var(--primary-yellow);
     transition: all 0.3s ease;
 }
 
 .graduating-class:hover {
-    box-shadow: 0 8px 30px var(--shadow-hover);
+    box-shadow: 0 8px 30px var(--shadow-hover), 0 0 15px rgba(253, 185, 19, 0.4);
     transform: translateY(-3px);
+    border-color: #FFC107;
 }
 
 .class-photo {
