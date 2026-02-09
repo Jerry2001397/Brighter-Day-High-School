@@ -745,6 +745,9 @@ body {
     overflow: hidden;
     box-shadow: 0 3px 15px var(--shadow);
     transition: all 0.3s ease;
+    border: 4px solid var(--primary-yellow);
+    outline: 4px solid var(--primary-grey);
+    outline-offset: -8px;
 }
 
 .staff-card:hover {
@@ -756,12 +759,21 @@ body {
     position: relative;
     overflow: hidden;
     height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--light-gray);
 }
 
 .staff-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.staff-image i {
+    color: var(--primary-grey);
+    opacity: 0.6;
 }
 
 .admin-contact {
