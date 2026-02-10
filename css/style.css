@@ -1937,12 +1937,24 @@ body {
     justify-content: center;
     text-decoration: none;
     transition: all 0.3s ease;
+    font-size: 1.1rem;
+}
+
+.social-links a:nth-child(1) {
+    background: #1877f2;
+}
+
+.social-links a:nth-child(2) {
+    background: #25d366;
+}
+
+.social-links a:nth-child(3) {
+    background: #0077b5;
 }
 
 .social-links a:hover {
-    background: var(--primary-yellow);
-    color: var(--dark-grey);
     transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .footer-bottom {
