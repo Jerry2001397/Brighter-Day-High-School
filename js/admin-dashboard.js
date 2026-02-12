@@ -1,5 +1,35 @@
 // Admin Dashboard JavaScript
 
+// Mobile Menu Toggle
+const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+const sidebar = document.getElementById('sidebar');
+const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+if (mobileMenuToggle && sidebar) {
+    mobileMenuToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('active');
+        if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
+    });
+    
+    // Close sidebar when clicking overlay
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        });
+    }
+    
+    // Close sidebar when clicking menu item on mobile
+    document.querySelectorAll('.sidebar-menu a').forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth <= 768) {
+                sidebar.classList.remove('active');
+                if (sidebarOverlay) sidebarOverlay.classList.remove('active');
+            }
+        });
+    });
+}
+
 // Navigation
 document.querySelectorAll('.sidebar-menu a[data-section]').forEach(link => {
     link.addEventListener('click', (e) => {
