@@ -35,10 +35,12 @@ if (!fs.existsSync(uploadsDir)) {
 const adminRoutes = require('./routes/admin');
 const newsRoutes = require('./routes/news');
 const setupRoutes = require('./routes/setup');
+const passwordResetRoutes = require('./routes/password-reset');
 
 app.use('/admin', adminRoutes);
 app.use('/news', newsRoutes);
 app.use('/setup', setupRoutes);
+app.use('/reset', passwordResetRoutes);
 
 // Default route - redirect to index.html
 app.get('/', (req, res) => {
