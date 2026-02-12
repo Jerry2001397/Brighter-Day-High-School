@@ -1,11 +1,8 @@
--- Brighter Day High School Database Schema
--- Create Database
-CREATE DATABASE IF NOT EXISTS brighter_day_school;
-USE brighter_day_school;
+-- Brighter Day High School Database Schema (PostgreSQL)
 
 -- Admin Users Table
 CREATE TABLE IF NOT EXISTS admin_users (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     full_name VARCHAR(100) NOT NULL,
@@ -17,16 +14,16 @@ CREATE TABLE IF NOT EXISTS admin_users (
 
 -- News Articles Table
 CREATE TABLE IF NOT EXISTS news_articles (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     category VARCHAR(50) NOT NULL,
     excerpt TEXT NOT NULL,
-    content LONGTEXT NOT NULL,
+    content TEXT NOT NULL,
     image_url VARCHAR(255),
     author_id INT,
     published_date DATE NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     is_published BOOLEAN DEFAULT TRUE,
     views INT DEFAULT 0,
     FOREIGN KEY (author_id) REFERENCES admin_users(id) ON DELETE SET NULL
@@ -34,23 +31,39 @@ CREATE TABLE IF NOT EXISTS news_articles (
 
 -- Notices Table
 CREATE TABLE IF NOT EXISTS notices (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
     icon VARCHAR(50) DEFAULT 'fa-bullhorn',
     priority INT DEFAULT 0,
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     author_id INT,
     FOREIGN KEY (author_id) REFERENCES admin_users(id) ON DELETE SET NULL
 );
+
+-- Create trigger function for updated_at
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- Create triggers for updated_at columns
+CREATE TRIGGER update_news_articles_updated_at BEFORE UPDATE ON news_articles
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_notices_updated_at BEFORE UPDATE ON notices
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Create default admin user (password: admin123)
 -- Password hash for 'admin123' using bcrypt
 INSERT INTO admin_users (username, password, full_name, email) 
 VALUES ('admin', '$2a$10$8K1p/a0dL3.Kyqk0c7fZXu6rWzkK0RxQPVlwVw5YhN5jDHnmXN5yG', 'System Administrator', 'admin@brighterday.edu.lr')
-ON DUPLICATE KEY UPDATE username=username;
+ON CONFLICT (username) DO NOTHING;
 
 -- Sample News Articles
 INSERT INTO news_articles (title, category, excerpt, content, image_url, author_id, published_date, is_published) VALUES
@@ -91,3 +104,4 @@ INSERT INTO notices (title, description, icon, priority, is_active, author_id) V
 ('School Fees Reminder', 'Parents are reminded that the deadline for third installment payment is February 28, 2026.', 'fa-money-bill-wave', 2, TRUE, 1),
 ('Parents Meeting', 'A general parents meeting is scheduled for February 25, 2026 at 10:00 AM in the school auditorium.', 'fa-users', 1, TRUE, 1),
 ('Library Hours Extended', 'The school library will now be open until 6:00 PM on weekdays to support students during exam preparation.', 'fa-book', 0, TRUE, 1);
+

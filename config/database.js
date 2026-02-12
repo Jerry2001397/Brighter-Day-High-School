@@ -1,30 +1,20 @@
-const mysql = require('mysql2');
+const { Pool } = require('pg');
 require('dotenv').config();
 
 // Create connection pool
-const pool = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'brighter_day_school',
-    port: process.env.DB_PORT || 3306,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
-// Get promise-based pool
-const promisePool = pool.promise();
-
 // Test connection
-pool.getConnection((err, connection) => {
+pool.query('SELECT NOW()', (err, res) => {
     if (err) {
         console.error('Error connecting to database:', err.message);
-        console.error('Please make sure MySQL is running and credentials in .env are correct');
+        console.error('Please make sure database is running and credentials are correct');
     } else {
         console.log('✓ Database connected successfully');
-        connection.release();
     }
 });
 
-module.exports = promisePool;
+module.exports = pool;

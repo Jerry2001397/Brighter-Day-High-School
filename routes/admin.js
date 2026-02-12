@@ -14,16 +14,16 @@ router.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
     try {
-        const [users] = await db.query(
-            'SELECT * FROM admin_users WHERE username = ? AND is_active = TRUE',
+        const result = await db.query(
+            'SELECT * FROM admin_users WHERE username = $1 AND is_active = TRUE',
             [username]
         );
 
-        if (users.length === 0) {
+        if (result.rows.length === 0) {
             return res.status(401).json({ success: false, message: 'Invalid username or password' });
         }
 
-        const user = users[0];
+        const user = result.rows[0];
         const isValidPassword = await bcrypt.compare(password, user.password);
 
         if (!isValidPassword) {
@@ -31,7 +31,7 @@ router.post('/login', async (req, res) => {
         }
 
         // Update last login
-        await db.query('UPDATE admin_users SET last_login = NOW() WHERE id = ?', [user.id]);
+        await db.query('UPDATE admin_users SET last_login = NOW() WHERE id = $1', [user.id]);
 
         // Set session
         req.session.adminId = user.id;
@@ -53,18 +53,18 @@ router.get('/dashboard', isAuthenticated, (req, res) => {
 // Get Dashboard Stats
 router.get('/api/stats', isAuthenticated, async (req, res) => {
     try {
-        const [newsCount] = await db.query('SELECT COUNT(*) as count FROM news_articles WHERE is_published = TRUE');
-        const [noticesCount] = await db.query('SELECT COUNT(*) as count FROM notices WHERE is_active = TRUE');
-        const [totalViews] = await db.query('SELECT SUM(views) as total FROM news_articles');
-        const [recentNews] = await db.query(
+        const newsCount = await db.query('SELECT COUNT(*) as count FROM news_articles WHERE is_published = TRUE');
+        const noticesCount = await db.query('SELECT COUNT(*) as count FROM notices WHERE is_active = TRUE');
+        const totalViews = await db.query('SELECT SUM(views) as total FROM news_articles');
+        const recentNews = await db.query(
             'SELECT id, title, category, published_date, views FROM news_articles ORDER BY created_at DESC LIMIT 5'
         );
 
         res.json({
-            newsCount: newsCount[0].count,
-            noticesCount: noticesCount[0].count,
-            totalViews: totalViews[0].total || 0,
-            recentNews
+            newsCount: parseInt(newsCount.rows[0].count),
+            noticesCount: parseInt(noticesCount.rows[0].count),
+            totalViews: parseInt(totalViews.rows[0].total) || 0,
+            recentNews: recentNews.rows
         });
     } catch (error) {
         console.error('Stats error:', error);

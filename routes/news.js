@@ -33,7 +33,7 @@ const upload = multer({
 // Get all news articles (Public)
 router.get('/api/articles', async (req, res) => {
     try {
-        const [articles] = await db.query(`
+        const result = await db.query(`
             SELECT 
                 n.id, n.title, n.category, n.excerpt, n.content, 
                 n.image_url, n.published_date, n.views,
@@ -43,7 +43,7 @@ router.get('/api/articles', async (req, res) => {
             WHERE n.is_published = TRUE
             ORDER BY n.published_date DESC
         `);
-        res.json(articles);
+        res.json(result.rows);
     } catch (error) {
         console.error('Fetch articles error:', error);
         res.status(500).json({ error: 'Failed to fetch articles' });
@@ -53,14 +53,14 @@ router.get('/api/articles', async (req, res) => {
 // Get all notices (Public)
 router.get('/api/notices', async (req, res) => {
     try {
-        const [notices] = await db.query(`
+        const result = await db.query(`
             SELECT id, title, description, icon, priority
             FROM notices
             WHERE is_active = TRUE
             ORDER BY priority DESC, created_at DESC
             LIMIT 10
         `);
-        res.json(notices);
+        res.json(result.rows);
     } catch (error) {
         console.error('Fetch notices error:', error);
         res.status(500).json({ error: 'Failed to fetch notices' });
@@ -70,24 +70,24 @@ router.get('/api/notices', async (req, res) => {
 // Get single article (Public) and increment views
 router.get('/api/articles/:id', async (req, res) => {
     try {
-        const [articles] = await db.query(`
+        const result = await db.query(`
             SELECT 
                 n.id, n.title, n.category, n.excerpt, n.content, 
                 n.image_url, n.published_date, n.views,
                 a.full_name as author
             FROM news_articles n
             LEFT JOIN admin_users a ON n.author_id = a.id
-            WHERE n.id = ? AND n.is_published = TRUE
+            WHERE n.id = $1 AND n.is_published = TRUE
         `, [req.params.id]);
 
-        if (articles.length === 0) {
+        if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Article not found' });
         }
 
         // Increment views
-        await db.query('UPDATE news_articles SET views = views + 1 WHERE id = ?', [req.params.id]);
+        await db.query('UPDATE news_articles SET views = views + 1 WHERE id = $1', [req.params.id]);
 
-        res.json(articles[0]);
+        res.json(result.rows[0]);
     } catch (error) {
         console.error('Fetch article error:', error);
         res.status(500).json({ error: 'Failed to fetch article' });
@@ -99,7 +99,7 @@ router.get('/api/articles/:id', async (req, res) => {
 // Get all articles for admin
 router.get('/api/admin/articles', isAuthenticated, async (req, res) => {
     try {
-        const [articles] = await db.query(`
+        const result = await db.query(`
             SELECT 
                 n.id, n.title, n.category, n.excerpt, n.published_date, 
                 n.is_published, n.views, n.created_at,
@@ -108,7 +108,7 @@ router.get('/api/admin/articles', isAuthenticated, async (req, res) => {
             LEFT JOIN admin_users a ON n.author_id = a.id
             ORDER BY n.created_at DESC
         `);
-        res.json(articles);
+        res.json(result.rows);
     } catch (error) {
         console.error('Fetch admin articles error:', error);
         res.status(500).json({ error: 'Failed to fetch articles' });
@@ -121,12 +121,13 @@ router.post('/api/admin/articles', isAuthenticated, upload.single('image'), asyn
     const image_url = req.file ? '/uploads/news/' + req.file.filename : null;
 
     try {
-        const [result] = await db.query(`
+        const result = await db.query(`
             INSERT INTO news_articles (title, category, excerpt, content, image_url, author_id, published_date, is_published)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            RETURNING id
         `, [title, category, excerpt, content, image_url, req.session.adminId, published_date, is_published || true]);
 
-        res.json({ success: true, id: result.insertId, message: 'Article created successfully' });
+        res.json({ success: true, id: result.rows[0].id, message: 'Article created successfully' });
     } catch (error) {
         console.error('Create article error:', error);
         res.status(500).json({ error: 'Failed to create article' });
@@ -141,9 +142,9 @@ router.put('/api/admin/articles/:id', isAuthenticated, upload.single('image'), a
     try {
         await db.query(`
             UPDATE news_articles 
-            SET title = ?, category = ?, excerpt = ?, content = ?, 
-                image_url = ?, published_date = ?, is_published = ?
-            WHERE id = ?
+            SET title = $1, category = $2, excerpt = $3, content = $4, 
+                image_url = $5, published_date = $6, is_published = $7
+            WHERE id = $8
         `, [title, category, excerpt, content, image_url, published_date, is_published, req.params.id]);
 
         res.json({ success: true, message: 'Article updated successfully' });
@@ -156,7 +157,7 @@ router.put('/api/admin/articles/:id', isAuthenticated, upload.single('image'), a
 // Delete article
 router.delete('/api/admin/articles/:id', isAuthenticated, async (req, res) => {
     try {
-        await db.query('DELETE FROM news_articles WHERE id = ?', [req.params.id]);
+        await db.query('DELETE FROM news_articles WHERE id = $1', [req.params.id]);
         res.json({ success: true, message: 'Article deleted successfully' });
     } catch (error) {
         console.error('Delete article error:', error);
@@ -167,13 +168,13 @@ router.delete('/api/admin/articles/:id', isAuthenticated, async (req, res) => {
 // Get all notices for admin
 router.get('/api/admin/notices', isAuthenticated, async (req, res) => {
     try {
-        const [notices] = await db.query(`
+        const result = await db.query(`
             SELECT n.*, a.full_name as author
             FROM notices n
             LEFT JOIN admin_users a ON n.author_id = a.id
             ORDER BY n.created_at DESC
         `);
-        res.json(notices);
+        res.json(result.rows);
     } catch (error) {
         console.error('Fetch admin notices error:', error);
         res.status(500).json({ error: 'Failed to fetch notices' });
@@ -185,12 +186,13 @@ router.post('/api/admin/notices', isAuthenticated, async (req, res) => {
     const { title, description, icon, priority, is_active } = req.body;
 
     try {
-        const [result] = await db.query(`
+        const result = await db.query(`
             INSERT INTO notices (title, description, icon, priority, is_active, author_id)
-            VALUES (?, ?, ?, ?, ?, ?)
+            VALUES ($1, $2, $3, $4, $5, $6)
+            RETURNING id
         `, [title, description, icon || 'fa-bullhorn', priority || 0, is_active !== false, req.session.adminId]);
 
-        res.json({ success: true, id: result.insertId, message: 'Notice created successfully' });
+        res.json({ success: true, id: result.rows[0].id, message: 'Notice created successfully' });
     } catch (error) {
         console.error('Create notice error:', error);
         res.status(500).json({ error: 'Failed to create notice' });
@@ -204,8 +206,8 @@ router.put('/api/admin/notices/:id', isAuthenticated, async (req, res) => {
     try {
         await db.query(`
             UPDATE notices 
-            SET title = ?, description = ?, icon = ?, priority = ?, is_active = ?
-            WHERE id = ?
+            SET title = $1, description = $2, icon = $3, priority = $4, is_active = $5
+            WHERE id = $6
         `, [title, description, icon, priority, is_active, req.params.id]);
 
         res.json({ success: true, message: 'Notice updated successfully' });
@@ -218,7 +220,7 @@ router.put('/api/admin/notices/:id', isAuthenticated, async (req, res) => {
 // Delete notice
 router.delete('/api/admin/notices/:id', isAuthenticated, async (req, res) => {
     try {
-        await db.query('DELETE FROM notices WHERE id = ?', [req.params.id]);
+        await db.query('DELETE FROM notices WHERE id = $1', [req.params.id]);
         res.json({ success: true, message: 'Notice deleted successfully' });
     } catch (error) {
         console.error('Delete notice error:', error);
