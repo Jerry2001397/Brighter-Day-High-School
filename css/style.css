@@ -869,6 +869,10 @@ body {
     font-style: italic;
 }
 
+.qualification strong {
+    font-size: 0.75rem;
+}
+
 .description {
     color: var(--dark-grey);
     font-size: 0.95rem;
