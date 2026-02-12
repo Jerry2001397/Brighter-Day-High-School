@@ -79,10 +79,12 @@ router.get('/setup-database', async (req, res) => {
         `);
 
         // Insert default admin user (password: admin123)
+        // First delete any existing admin user to ensure clean setup
+        await db.query(`DELETE FROM admin_users WHERE username = 'admin'`);
+        
         await db.query(`
             INSERT INTO admin_users (username, password, full_name, email) 
-            VALUES ('admin', '$2a$10$8K1p/a0dL3.Kyqk0c7fZXu6rWzkK0RxQPVlwVw5YhN5jDHnmXN5yG', 'System Administrator', 'admin@brighterday.edu.lr')
-            ON CONFLICT (username) DO NOTHING
+            VALUES ('admin', '$2a$10$ce9inAGjGAV96.Ynmey/7ug3uUcKSJD4uccA.tzt3Ch.mhstfhb2W', 'System Administrator', 'admin@brighterday.edu.lr')
         `);
 
         // Insert sample news articles
