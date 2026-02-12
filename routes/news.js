@@ -1,0 +1,229 @@
+const express = require('express');
+const router = express.Router();
+const db = require('../config/database');
+const { isAuthenticated } = require('../middleware/auth');
+const multer = require('multer');
+const path = require('path');
+
+// Configure multer for image uploads
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/news/');
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, 'news-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+    fileFilter: function (req, file, cb) {
+        const filetypes = /jpeg|jpg|png|gif/;
+        const mimetype = filetypes.test(file.mimetype);
+        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+        if (mimetype && extname) {
+            return cb(null, true);
+        }
+        cb(new Error('Only image files are allowed!'));
+    }
+});
+
+// Get all news articles (Public)
+router.get('/api/articles', async (req, res) => {
+    try {
+        const [articles] = await db.query(`
+            SELECT 
+                n.id, n.title, n.category, n.excerpt, n.content, 
+                n.image_url, n.published_date, n.views,
+                a.full_name as author
+            FROM news_articles n
+            LEFT JOIN admin_users a ON n.author_id = a.id
+            WHERE n.is_published = TRUE
+            ORDER BY n.published_date DESC
+        `);
+        res.json(articles);
+    } catch (error) {
+        console.error('Fetch articles error:', error);
+        res.status(500).json({ error: 'Failed to fetch articles' });
+    }
+});
+
+// Get all notices (Public)
+router.get('/api/notices', async (req, res) => {
+    try {
+        const [notices] = await db.query(`
+            SELECT id, title, description, icon, priority
+            FROM notices
+            WHERE is_active = TRUE
+            ORDER BY priority DESC, created_at DESC
+            LIMIT 10
+        `);
+        res.json(notices);
+    } catch (error) {
+        console.error('Fetch notices error:', error);
+        res.status(500).json({ error: 'Failed to fetch notices' });
+    }
+});
+
+// Get single article (Public) and increment views
+router.get('/api/articles/:id', async (req, res) => {
+    try {
+        const [articles] = await db.query(`
+            SELECT 
+                n.id, n.title, n.category, n.excerpt, n.content, 
+                n.image_url, n.published_date, n.views,
+                a.full_name as author
+            FROM news_articles n
+            LEFT JOIN admin_users a ON n.author_id = a.id
+            WHERE n.id = ? AND n.is_published = TRUE
+        `, [req.params.id]);
+
+        if (articles.length === 0) {
+            return res.status(404).json({ error: 'Article not found' });
+        }
+
+        // Increment views
+        await db.query('UPDATE news_articles SET views = views + 1 WHERE id = ?', [req.params.id]);
+
+        res.json(articles[0]);
+    } catch (error) {
+        console.error('Fetch article error:', error);
+        res.status(500).json({ error: 'Failed to fetch article' });
+    }
+});
+
+// ADMIN ROUTES (Protected)
+
+// Get all articles for admin
+router.get('/api/admin/articles', isAuthenticated, async (req, res) => {
+    try {
+        const [articles] = await db.query(`
+            SELECT 
+                n.id, n.title, n.category, n.excerpt, n.published_date, 
+                n.is_published, n.views, n.created_at,
+                a.full_name as author
+            FROM news_articles n
+            LEFT JOIN admin_users a ON n.author_id = a.id
+            ORDER BY n.created_at DESC
+        `);
+        res.json(articles);
+    } catch (error) {
+        console.error('Fetch admin articles error:', error);
+        res.status(500).json({ error: 'Failed to fetch articles' });
+    }
+});
+
+// Create new article
+router.post('/api/admin/articles', isAuthenticated, upload.single('image'), async (req, res) => {
+    const { title, category, excerpt, content, published_date, is_published } = req.body;
+    const image_url = req.file ? '/uploads/news/' + req.file.filename : null;
+
+    try {
+        const [result] = await db.query(`
+            INSERT INTO news_articles (title, category, excerpt, content, image_url, author_id, published_date, is_published)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `, [title, category, excerpt, content, image_url, req.session.adminId, published_date, is_published || true]);
+
+        res.json({ success: true, id: result.insertId, message: 'Article created successfully' });
+    } catch (error) {
+        console.error('Create article error:', error);
+        res.status(500).json({ error: 'Failed to create article' });
+    }
+});
+
+// Update article
+router.put('/api/admin/articles/:id', isAuthenticated, upload.single('image'), async (req, res) => {
+    const { title, category, excerpt, content, published_date, is_published } = req.body;
+    const image_url = req.file ? '/uploads/news/' + req.file.filename : req.body.existing_image;
+
+    try {
+        await db.query(`
+            UPDATE news_articles 
+            SET title = ?, category = ?, excerpt = ?, content = ?, 
+                image_url = ?, published_date = ?, is_published = ?
+            WHERE id = ?
+        `, [title, category, excerpt, content, image_url, published_date, is_published, req.params.id]);
+
+        res.json({ success: true, message: 'Article updated successfully' });
+    } catch (error) {
+        console.error('Update article error:', error);
+        res.status(500).json({ error: 'Failed to update article' });
+    }
+});
+
+// Delete article
+router.delete('/api/admin/articles/:id', isAuthenticated, async (req, res) => {
+    try {
+        await db.query('DELETE FROM news_articles WHERE id = ?', [req.params.id]);
+        res.json({ success: true, message: 'Article deleted successfully' });
+    } catch (error) {
+        console.error('Delete article error:', error);
+        res.status(500).json({ error: 'Failed to delete article' });
+    }
+});
+
+// Get all notices for admin
+router.get('/api/admin/notices', isAuthenticated, async (req, res) => {
+    try {
+        const [notices] = await db.query(`
+            SELECT n.*, a.full_name as author
+            FROM notices n
+            LEFT JOIN admin_users a ON n.author_id = a.id
+            ORDER BY n.created_at DESC
+        `);
+        res.json(notices);
+    } catch (error) {
+        console.error('Fetch admin notices error:', error);
+        res.status(500).json({ error: 'Failed to fetch notices' });
+    }
+});
+
+// Create notice
+router.post('/api/admin/notices', isAuthenticated, async (req, res) => {
+    const { title, description, icon, priority, is_active } = req.body;
+
+    try {
+        const [result] = await db.query(`
+            INSERT INTO notices (title, description, icon, priority, is_active, author_id)
+            VALUES (?, ?, ?, ?, ?, ?)
+        `, [title, description, icon || 'fa-bullhorn', priority || 0, is_active !== false, req.session.adminId]);
+
+        res.json({ success: true, id: result.insertId, message: 'Notice created successfully' });
+    } catch (error) {
+        console.error('Create notice error:', error);
+        res.status(500).json({ error: 'Failed to create notice' });
+    }
+});
+
+// Update notice
+router.put('/api/admin/notices/:id', isAuthenticated, async (req, res) => {
+    const { title, description, icon, priority, is_active } = req.body;
+
+    try {
+        await db.query(`
+            UPDATE notices 
+            SET title = ?, description = ?, icon = ?, priority = ?, is_active = ?
+            WHERE id = ?
+        `, [title, description, icon, priority, is_active, req.params.id]);
+
+        res.json({ success: true, message: 'Notice updated successfully' });
+    } catch (error) {
+        console.error('Update notice error:', error);
+        res.status(500).json({ error: 'Failed to update notice' });
+    }
+});
+
+// Delete notice
+router.delete('/api/admin/notices/:id', isAuthenticated, async (req, res) => {
+    try {
+        await db.query('DELETE FROM notices WHERE id = ?', [req.params.id]);
+        res.json({ success: true, message: 'Notice deleted successfully' });
+    } catch (error) {
+        console.error('Delete notice error:', error);
+        res.status(500).json({ error: 'Failed to delete notice' });
+    }
+});
+
+module.exports = router;

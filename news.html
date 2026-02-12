@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News & Announcements - Brighter Day ELEM, Jr & Sr High School</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <img src="BRIDAPS IMAGES/School logo.png" alt="School Logo" class="logo-img">
+                <span class="school-name">BRIDAPS</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="administrators.html">Administrators</a></li>
+                <li><a href="teaching-staffs.html">Teaching Staffs</a></li>
+                <li><a href="graduates.html">Our Graduates</a></li>
+                <li><a href="news.html" class="active">News</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="header-overlay"></div>
+        <div class="header-content">
+            <h1>News & Announcements</h1>
+            <p>Stay updated with the latest happenings at BRIDAPS</p>
+        </div>
+    </section>
+
+    <!-- News & Announcements Content -->
+    <section class="news-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Latest Updates</h2>
+                <div class="underline"></div>
+                <p>Keep up-to-date with school events, achievements, and important announcements</p>
+            </div>
+
+            <!-- News Grid -->
+            <div class="news-grid" id="newsGrid">
+                <!-- News articles will be loaded dynamically from database -->
+                <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--gray);">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                    <p>Loading news articles...</p>
+                </div>
+            </div>
+
+            <!-- Important Notices Section -->
+            <div class="notices-section">
+                <div class="section-header">
+                    <h2>Important Notices</h2>
+                    <div class="underline"></div>
+                </div>
+                <div class="notices-grid" id="noticesGrid">
+                    <!-- Notices will be loaded dynamically from database -->
+                    <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--gray);">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem;"></i>
+                        <p>Loading notices...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Brighter Day ELEM, Jr & Sr High School</h3>
+                    <p class="motto"><strong>MOTTO:</strong> Learning To Teach Others</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="administrators.html">Administrators</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Info</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Soul Clinic Community, Paynesville</p>
+                    <p><i class="fas fa-phone"></i> 077 701 1547 / 0886612797</p>
+                    <p><i class="fas fa-envelope"></i> brighterdayhighscool@gmail.com</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Follow Us</h3>
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/share/1Dgape7bYc/" target="_blank"><i class="fab fa-facebook"></i></a>
+                        <a href="https://wa.me/231777011547" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Brighter Day ELEM, Jr & Sr High School. All rights reserved.</p>
+                <p>Powered by <strong style="background: linear-gradient(135deg, #FDB913, #f39c12, #FDB913); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 1.1em; letter-spacing: 1px;">Tech Bridge Liberia-TBL</strong></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script>
+        // Load news articles from database
+        async function loadNewsArticles() {
+            try {
+                const response = await fetch('/news/api/articles');
+                const articles = await response.json();
+                
+                const newsGrid = document.getElementById('newsGrid');
+                
+                if (articles.length > 0) {
+                    newsGrid.innerHTML = articles.map(article => {
+                        const date = new Date(article.published_date);
+                        const day = date.getDate();
+                        const month = date.toLocaleDateString('en-US', { month: 'short' });
+                        const year = date.getFullYear();
+                        const imageUrl = article.image_url || 'BRIDAPS IMAGES/School logo.png';
+                        
+                        return `
+                            <article class="news-card">
+                                <div class="news-image">
+                                    <img src="${imageUrl}" alt="${article.title}" onerror="this.src='BRIDAPS IMAGES/School logo.png'">
+                                    <div class="news-date">
+                                        <span class="day">${day}</span>
+                                        <span class="month">${month}</span>
+                                        <span class="year">${year}</span>
+                                    </div>
+                                </div>
+                                <div class="news-content">
+                                    <div class="news-category">
+                                        <i class="fas fa-tag"></i> ${article.category}
+                                    </div>
+                                    <h3 class="news-title">${article.title}</h3>
+                                    <p class="news-excerpt">
+                                        ${article.excerpt}
+                                    </p>
+                                    <div class="news-meta">
+                                        <span><i class="fas fa-user"></i> ${article.author || 'Administration'}</span>
+                                        <span><i class="fas fa-eye"></i> ${article.views || 0} views</span>
+                                    </div>
+                                </div>
+                            </article>
+                        `;
+                    }).join('');
+                } else {
+                    newsGrid.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--gray);">
+                            <i class="fas fa-newspaper" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+                            <p>No news articles available at the moment.</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading news articles:', error);
+                document.getElementById('newsGrid').innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: #e74c3c;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                        <p>Failed to load news articles. Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Load notices from database
+        async function loadNotices() {
+            try {
+                const response = await fetch('/news/api/notices');
+                const notices = await response.json();
+                
+                const noticesGrid = document.getElementById('noticesGrid');
+                
+                if (notices.length > 0) {
+                    noticesGrid.innerHTML = notices.map(notice => `
+                        <div class="notice-card">
+                            <div class="notice-icon">
+                                <i class="fas ${notice.icon}"></i>
+                            </div>
+                            <div class="notice-content">
+                                <h4>${notice.title}</h4>
+                                <p>${notice.description}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    noticesGrid.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--gray);">
+                            <i class="fas fa-bullhorn" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+                            <p>No notices available at the moment.</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading notices:', error);
+                document.getElementById('noticesGrid').innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #e74c3c;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 1.5rem;"></i>
+                        <p>Failed to load notices. Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Load data when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            loadNewsArticles();
+            loadNotices();
+        });
+    </script>
+</body>
+</html>
