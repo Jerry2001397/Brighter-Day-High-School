@@ -2204,6 +2204,14 @@ body {
     padding: 1.5rem;
 }
 
+.news-top-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
 .news-category {
     display: inline-block;
     background: linear-gradient(135deg, #2E86C1, #1B4F72);
@@ -2218,6 +2226,17 @@ body {
     margin-right: 5px;
 }
 
+.news-inline-date {
+    color: var(--gray);
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.news-inline-date i {
+    color: var(--primary-yellow);
+    margin-right: 5px;
+}
+
 .news-title {
     color: var(--primary-color);
     font-size: 1.3rem;
@@ -2229,6 +2248,43 @@ body {
     color: var(--dark-grey);
     line-height: 1.6;
     margin-bottom: 1rem;
+}
+
+.news-details {
+    margin-bottom: 1rem;
+}
+
+.news-details summary {
+    list-style: none;
+    cursor: pointer;
+    color: var(--primary-grey);
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.news-details summary::-webkit-details-marker {
+    display: none;
+}
+
+.news-details[open] summary i {
+    transform: rotate(180deg);
+}
+
+.news-details summary i {
+    transition: transform 0.3s ease;
+    color: var(--primary-yellow);
+}
+
+.news-full-content {
+    margin-top: 0.75rem;
+    color: var(--dark-grey);
+    line-height: 1.7;
+}
+
+.news-full-content p {
+    margin-bottom: 0.75rem;
 }
 
 .news-meta {
