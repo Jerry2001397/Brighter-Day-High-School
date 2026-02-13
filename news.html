@@ -137,7 +137,7 @@
                         const hasFullContent = article.content && article.content.trim().length > 0;
                         
                         return `
-                            <article class="news-card">
+                            <article class="news-card" id="news-${article.id}">
                                 <div class="news-image">
                                     <img src="${imageUrl}" alt="${article.title}" onerror="this.src='BRIDAPS IMAGES/School logo.png'">
                                 </div>
@@ -165,6 +165,14 @@
                                     <div class="news-meta">
                                         <span><i class="fas fa-user"></i> ${article.author || 'Administration'}</span>
                                         <span><i class="fas fa-eye"></i> ${article.views || 0} views</span>
+                                        <div class="news-actions">
+                                            <button type="button" class="news-action-btn" data-article-id="${article.id}" data-article-title="${article.title}" onclick="shareNewsLink(this)">
+                                                <i class="fas fa-share-alt"></i> Share
+                                            </button>
+                                            <button type="button" class="news-action-btn" data-article-id="${article.id}" onclick="copyNewsLink(this)">
+                                                <i class="fas fa-link"></i> Copy link
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </article>
@@ -187,6 +195,54 @@
                     </div>
                 `;
             }
+        }
+
+        async function shareNewsLink(button) {
+            const articleId = button.dataset.articleId;
+            const articleTitle = button.dataset.articleTitle || 'News Article';
+            const shareUrl = `${window.location.origin}${window.location.pathname}#news-${articleId}`;
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: articleTitle,
+                        text: articleTitle,
+                        url: shareUrl
+                    });
+                    return;
+                } catch (error) {
+                    if (error.name === 'AbortError') {
+                        return;
+                    }
+                    console.error('Web Share failed:', error);
+                }
+            }
+
+            await copyNewsLink(button);
+        }
+
+        async function copyNewsLink(button) {
+            const articleId = button.dataset.articleId;
+            const shareUrl = `${window.location.origin}${window.location.pathname}#news-${articleId}`;
+            try {
+                await navigator.clipboard.writeText(shareUrl);
+            } catch (error) {
+                const textarea = document.createElement('textarea');
+                textarea.value = shareUrl;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+            }
+
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-check"></i> Copied';
+            button.disabled = true;
+
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }, 1400);
         }
 
         // Load notices from database

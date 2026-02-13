@@ -2293,6 +2293,8 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 0.65rem 1rem;
     color: var(--gray);
     font-size: 0.9rem;
     padding-top: 1rem;
@@ -2302,6 +2304,34 @@ body {
 .news-meta span i {
     margin-right: 5px;
     color: var(--primary-color);
+}
+
+.news-actions {
+    margin-left: auto;
+    display: inline-flex;
+    gap: 0.45rem;
+}
+
+.news-action-btn {
+    border: 1px solid var(--light-grey);
+    background: var(--white);
+    color: var(--primary-grey);
+    border-radius: 20px;
+    padding: 0.35rem 0.8rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.news-action-btn i {
+    margin-right: 5px;
+}
+
+.news-action-btn:hover {
+    border-color: var(--primary-yellow);
+    color: var(--dark-grey);
+    background: #FFF9E6;
 }
 
 /* Notices Section */
