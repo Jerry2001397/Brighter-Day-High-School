@@ -715,16 +715,25 @@ body {
 }
 
 .mv-card {
-    background: var(--light-gray);
+    background: var(--white);
+    border: 2px solid var(--light-grey);
     padding: 2.5rem;
     border-radius: 10px;
     text-align: center;
+    box-shadow: 0 6px 20px var(--shadow);
+    transition: all 0.3s ease;
+}
+
+.mv-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--primary-yellow);
+    box-shadow: 0 12px 30px var(--shadow-hover);
 }
 
 .mv-icon {
     width: 80px;
     height: 80px;
-    background: linear-gradient(135deg, var(--primary-yellow), #FFC533);
+    background: linear-gradient(135deg, var(--primary-yellow), var(--light-grey));
     color: var(--dark-grey);
     border-radius: 50%;
     display: flex;
@@ -755,23 +764,39 @@ body {
     gap: 2rem;
 }
 
-.value-item {
+.core-values .value-item {
     text-align: center;
     padding: 1.5rem;
+    background: var(--white);
+    border: 2px solid var(--light-grey);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px var(--shadow);
+    transition: all 0.3s ease;
 }
 
-.value-item i {
+.core-values .value-item:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-yellow);
+    box-shadow: 0 10px 24px var(--shadow-hover);
+}
+
+.core-values .value-item i {
     font-size: 2.5rem;
     color: var(--primary-grey);
     margin-bottom: 1rem;
+    transition: color 0.3s ease;
 }
 
-.value-item h4 {
+.core-values .value-item:hover i {
+    color: var(--primary-yellow);
+}
+
+.core-values .value-item h4 {
     color: var(--dark-grey);
     margin-bottom: 0.5rem;
 }
 
-.value-item p {
+.core-values .value-item p {
     color: var(--gray);
     font-size: 0.9rem;
 }
@@ -788,15 +813,29 @@ body {
 
 .reason-card {
     background: var(--white);
-    border: 2px solid var(--light-gray);
+    border: 2px solid var(--light-grey);
     padding: 2rem;
-    border-radius: 10px;
+    border-radius: 12px;
+    box-shadow: 0 5px 18px var(--shadow);
     transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.reason-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-yellow) 0%, var(--primary-grey) 100%);
 }
 
 .reason-card:hover {
     border-color: var(--primary-yellow);
-    box-shadow: 0 5px 20px var(--shadow);
+    transform: translateY(-5px);
+    box-shadow: 0 12px 28px var(--shadow-hover);
 }
 
 .reason-number {
@@ -1580,7 +1619,7 @@ body {
     border-top: 3px solid var(--primary-yellow);
 }
 
-.value-item {
+.association-values .value-item {
     text-align: center;
     padding: 1rem;
     background: var(--white);
@@ -1589,18 +1628,18 @@ body {
     transition: all 0.3s ease;
 }
 
-.value-item:hover {
+.association-values .value-item:hover {
     background: var(--primary-yellow);
     transform: translateY(-5px);
     box-shadow: 0 5px 20px rgba(253, 185, 19, 0.4);
 }
 
-.value-item:hover i,
-.value-item:hover span {
+.association-values .value-item:hover i,
+.association-values .value-item:hover span {
     color: var(--white);
 }
 
-.value-item i {
+.association-values .value-item i {
     font-size: 2rem;
     color: var(--primary-grey);
     margin-bottom: 0.5rem;
@@ -1608,7 +1647,7 @@ body {
     transition: color 0.3s ease;
 }
 
-.value-item span {
+.association-values .value-item span {
     font-weight: 600;
     font-size: 1.1rem;
     color: var(--dark-grey);
