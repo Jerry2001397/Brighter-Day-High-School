@@ -272,14 +272,16 @@ body {
 
 .hero-news-link {
     margin: 1.25rem auto 0;
-    display: inline-flex;
+    display: flex;
     width: fit-content;
     position: relative;
     z-index: 2;
     align-items: center;
+    justify-content: center;
     gap: 0.55rem;
     color: var(--primary-grey);
     font-weight: 700;
+    text-align: center;
     text-decoration: none;
     padding: 0.65rem 1rem;
     border-radius: 999px;
@@ -521,6 +523,10 @@ body {
     
     .welcome-text {
         font-size: 1rem;
+    }
+
+    .hero-news-link {
+        max-width: 95%;
     }
 }
 
