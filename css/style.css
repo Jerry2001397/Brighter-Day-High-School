@@ -2373,6 +2373,10 @@ body {
     background: #FFF9E6;
 }
 
+.shared-hidden {
+    display: none !important;
+}
+
 /* Notices Section */
 .notices-section {
     margin-top: 4rem;
@@ -2420,6 +2424,13 @@ body {
     color: var(--dark-grey);
     line-height: 1.6;
     font-size: 0.95rem;
+}
+
+.notice-actions {
+    margin-top: 0.8rem;
+    display: inline-flex;
+    gap: 0.45rem;
+    flex-wrap: wrap;
 }
 
 /* Responsive Design for News */

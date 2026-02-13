@@ -246,6 +246,106 @@
             }, 1400);
         }
 
+        async function shareNoticeLink(button) {
+            const noticeId = button.dataset.noticeId;
+            const noticeTitle = button.dataset.noticeTitle || 'Announcement';
+            const shareUrl = `${window.location.origin}${window.location.pathname}#notice-${noticeId}`;
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: noticeTitle,
+                        text: noticeTitle,
+                        url: shareUrl
+                    });
+                    return;
+                } catch (error) {
+                    if (error.name === 'AbortError') {
+                        return;
+                    }
+                    console.error('Web Share failed:', error);
+                }
+            }
+
+            await copyNoticeLink(button);
+        }
+
+        async function copyNoticeLink(button) {
+            const noticeId = button.dataset.noticeId;
+            const shareUrl = `${window.location.origin}${window.location.pathname}#notice-${noticeId}`;
+
+            try {
+                await navigator.clipboard.writeText(shareUrl);
+            } catch (error) {
+                const textarea = document.createElement('textarea');
+                textarea.value = shareUrl;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+            }
+
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-check"></i> Copied';
+            button.disabled = true;
+
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }, 1400);
+        }
+
+        function resetSharedView() {
+            document.querySelectorAll('.shared-hidden').forEach(el => {
+                el.classList.remove('shared-hidden');
+            });
+        }
+
+        function applySharedViewFromHash() {
+            resetSharedView();
+
+            const hash = decodeURIComponent(window.location.hash.replace('#', '').trim());
+            if (!hash) {
+                return;
+            }
+
+            const target = document.getElementById(hash);
+            if (!target) {
+                return;
+            }
+
+            const newsCards = document.querySelectorAll('#newsGrid .news-card');
+            const noticeCards = document.querySelectorAll('#noticesGrid .notice-card');
+            const mainNewsHeader = document.querySelector('.news-section .container > .section-header');
+            const noticesSection = document.querySelector('.notices-section');
+
+            if (hash.startsWith('news-')) {
+                newsCards.forEach(card => {
+                    if (card.id !== hash) {
+                        card.classList.add('shared-hidden');
+                    }
+                });
+
+                if (noticesSection) {
+                    noticesSection.classList.add('shared-hidden');
+                }
+            } else if (hash.startsWith('notice-')) {
+                newsCards.forEach(card => card.classList.add('shared-hidden'));
+
+                noticeCards.forEach(card => {
+                    if (card.id !== hash) {
+                        card.classList.add('shared-hidden');
+                    }
+                });
+
+                if (mainNewsHeader) {
+                    mainNewsHeader.classList.add('shared-hidden');
+                }
+            }
+
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
         // Load notices from database
         async function loadNotices() {
             try {
@@ -256,13 +356,21 @@
                 
                 if (notices.length > 0) {
                     noticesGrid.innerHTML = notices.map(notice => `
-                        <div class="notice-card">
+                        <div class="notice-card" id="notice-${notice.id}">
                             <div class="notice-icon">
                                 <i class="fas ${notice.icon}"></i>
                             </div>
                             <div class="notice-content">
                                 <h4>${notice.title}</h4>
                                 <p>${notice.description}</p>
+                                <div class="notice-actions">
+                                    <button type="button" class="news-action-btn" data-notice-id="${notice.id}" data-notice-title="${notice.title}" onclick="shareNoticeLink(this)">
+                                        <i class="fas fa-share-alt"></i> Share
+                                    </button>
+                                    <button type="button" class="news-action-btn" data-notice-id="${notice.id}" onclick="copyNoticeLink(this)">
+                                        <i class="fas fa-link"></i> Copy link
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     `).join('');
@@ -286,10 +394,12 @@
         }
 
         // Load data when page loads
-        window.addEventListener('DOMContentLoaded', () => {
-            loadNewsArticles();
-            loadNotices();
+        window.addEventListener('DOMContentLoaded', async () => {
+            await Promise.all([loadNewsArticles(), loadNotices()]);
+            applySharedViewFromHash();
         });
+
+        window.addEventListener('hashchange', applySharedViewFromHash);
     </script>
 </body>
 </html>
