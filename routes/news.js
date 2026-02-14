@@ -4,6 +4,9 @@ const db = require('../config/database');
 const { isAuthenticated } = require('../middleware/auth');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
+
+const newsUploadsDir = path.join(__dirname, '..', 'uploads', 'news');
 
 function normalizeImageUrl(imageUrl) {
     if (!imageUrl) {
@@ -43,7 +46,8 @@ function normalizeImageUrl(imageUrl) {
 // Configure multer for image uploads
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, path.join(__dirname, '..', 'uploads', 'news'));
+        fs.mkdirSync(newsUploadsDir, { recursive: true });
+        cb(null, newsUploadsDir);
     },
     filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -163,6 +167,13 @@ router.post('/api/admin/articles', isAuthenticated, upload.single('image'), asyn
     const { title, category, excerpt, content, published_date, is_published } = req.body;
     const image_url = req.file ? normalizeImageUrl('/uploads/news/' + req.file.filename) : null;
 
+    if (req.file) {
+        const savedImagePath = path.join(newsUploadsDir, req.file.filename);
+        if (!fs.existsSync(savedImagePath)) {
+            return res.status(500).json({ error: 'Image upload failed. Please try again.' });
+        }
+    }
+
     try {
         const result = await db.query(`
             INSERT INTO news_articles (title, category, excerpt, content, image_url, author_id, published_date, is_published)
@@ -183,6 +194,13 @@ router.put('/api/admin/articles/:id', isAuthenticated, upload.single('image'), a
     const image_url = req.file
         ? normalizeImageUrl('/uploads/news/' + req.file.filename)
         : normalizeImageUrl(req.body.existing_image);
+
+    if (req.file) {
+        const savedImagePath = path.join(newsUploadsDir, req.file.filename);
+        if (!fs.existsSync(savedImagePath)) {
+            return res.status(500).json({ error: 'Image upload failed. Please try again.' });
+        }
+    }
 
     try {
         await db.query(`

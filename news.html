@@ -137,6 +137,22 @@
             return `/${normalized.replace(/^\.\//, '')}`;
         }
 
+        function handleArticleImageError(img) {
+            const fallbackImage = 'BRIDAPS IMAGES/School logo.png';
+            const retryCount = Number(img.dataset.retryCount || '0');
+
+            if (retryCount < 1) {
+                img.dataset.retryCount = String(retryCount + 1);
+                const originalSrc = (img.dataset.originalSrc || img.getAttribute('src') || '').split('?')[0];
+                img.dataset.originalSrc = originalSrc;
+                img.src = `${originalSrc}?retry=${Date.now()}`;
+                return;
+            }
+
+            img.onerror = null;
+            img.src = fallbackImage;
+        }
+
         // Load news articles from database
         async function loadNewsArticles() {
             try {
@@ -159,7 +175,7 @@
                         return `
                             <article class="news-card" id="news-${article.id}">
                                 <div class="news-image">
-                                    <img src="${imageUrl}" alt="${article.title}" onerror="this.src='BRIDAPS IMAGES/School logo.png'">
+                                    <img src="${imageUrl}" alt="${article.title}" data-original-src="${imageUrl}" data-retry-count="0" onerror="handleArticleImageError(this)">
                                 </div>
                                 <div class="news-content">
                                     <div class="news-top-meta">
