@@ -138,7 +138,6 @@
         }
 
         function handleArticleImageError(img) {
-            const fallbackImage = 'BRIDAPS IMAGES/School logo.png';
             const retryCount = Number(img.dataset.retryCount || '0');
 
             if (retryCount < 1) {
@@ -150,7 +149,7 @@
             }
 
             img.onerror = null;
-            img.src = fallbackImage;
+            img.style.display = 'none';
         }
 
         // Load news articles from database
