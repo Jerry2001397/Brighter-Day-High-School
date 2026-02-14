@@ -7,6 +7,7 @@ const path = require('path');
 const fs = require('fs');
 
 const newsUploadsDir = path.join(__dirname, '..', 'uploads', 'news');
+const newsPublicDir = path.join(__dirname, '..', 'public', 'news');
 
 function normalizeImageUrl(imageUrl) {
     if (!imageUrl) {
@@ -28,7 +29,15 @@ function normalizeImageUrl(imageUrl) {
         return normalized;
     }
 
+    if (normalized.startsWith('/public/')) {
+        return normalized;
+    }
+
     if (normalized.startsWith('uploads/')) {
+        return `/${normalized}`;
+    }
+
+    if (normalized.startsWith('public/')) {
         return `/${normalized}`;
     }
 
@@ -43,11 +52,39 @@ function normalizeImageUrl(imageUrl) {
     return normalized.startsWith('/') ? normalized : `/${normalized}`;
 }
 
+function resolveImageUrlForResponse(imageUrl) {
+    const normalized = normalizeImageUrl(imageUrl);
+    if (!normalized || /^https?:\/\//i.test(normalized)) {
+        return normalized;
+    }
+
+    if (normalized.startsWith('/public/news/')) {
+        const filename = path.basename(normalized);
+        const publicPath = path.join(newsPublicDir, filename);
+        return fs.existsSync(publicPath) ? normalized : null;
+    }
+
+    if (normalized.startsWith('/uploads/news/')) {
+        const filename = path.basename(normalized);
+        const uploadsPath = path.join(newsUploadsDir, filename);
+        if (fs.existsSync(uploadsPath)) {
+            return normalized;
+        }
+
+        const publicPath = path.join(newsPublicDir, filename);
+        if (fs.existsSync(publicPath)) {
+            return `/public/news/${filename}`;
+        }
+    }
+
+    return normalized;
+}
+
 // Configure multer for image uploads
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        fs.mkdirSync(newsUploadsDir, { recursive: true });
-        cb(null, newsUploadsDir);
+        fs.mkdirSync(newsPublicDir, { recursive: true });
+        cb(null, newsPublicDir);
     },
     filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -84,7 +121,7 @@ router.get('/api/articles', async (req, res) => {
         `);
         const articles = result.rows.map(article => ({
             ...article,
-            image_url: normalizeImageUrl(article.image_url)
+            image_url: resolveImageUrlForResponse(article.image_url)
         }));
 
         res.json(articles);
@@ -133,7 +170,7 @@ router.get('/api/articles/:id', async (req, res) => {
 
         res.json({
             ...result.rows[0],
-            image_url: normalizeImageUrl(result.rows[0].image_url)
+            image_url: resolveImageUrlForResponse(result.rows[0].image_url)
         });
     } catch (error) {
         console.error('Fetch article error:', error);
@@ -165,10 +202,10 @@ router.get('/api/admin/articles', isAuthenticated, async (req, res) => {
 // Create new article
 router.post('/api/admin/articles', isAuthenticated, upload.single('image'), async (req, res) => {
     const { title, category, excerpt, content, published_date, is_published } = req.body;
-    const image_url = req.file ? normalizeImageUrl('/uploads/news/' + req.file.filename) : null;
+    const image_url = req.file ? normalizeImageUrl('/public/news/' + req.file.filename) : null;
 
     if (req.file) {
-        const savedImagePath = path.join(newsUploadsDir, req.file.filename);
+        const savedImagePath = path.join(newsPublicDir, req.file.filename);
         if (!fs.existsSync(savedImagePath)) {
             return res.status(500).json({ error: 'Image upload failed. Please try again.' });
         }
@@ -192,11 +229,11 @@ router.post('/api/admin/articles', isAuthenticated, upload.single('image'), asyn
 router.put('/api/admin/articles/:id', isAuthenticated, upload.single('image'), async (req, res) => {
     const { title, category, excerpt, content, published_date, is_published } = req.body;
     const image_url = req.file
-        ? normalizeImageUrl('/uploads/news/' + req.file.filename)
+        ? normalizeImageUrl('/public/news/' + req.file.filename)
         : normalizeImageUrl(req.body.existing_image);
 
     if (req.file) {
-        const savedImagePath = path.join(newsUploadsDir, req.file.filename);
+        const savedImagePath = path.join(newsPublicDir, req.file.filename);
         if (!fs.existsSync(savedImagePath)) {
             return res.status(500).json({ error: 'Image upload failed. Please try again.' });
         }
