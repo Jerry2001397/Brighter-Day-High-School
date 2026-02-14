@@ -118,6 +118,25 @@
 
     <script src="js/script.js"></script>
     <script>
+        function resolveArticleImageUrl(imageUrl) {
+            const fallbackImage = 'BRIDAPS IMAGES/School logo.png';
+
+            if (!imageUrl) {
+                return fallbackImage;
+            }
+
+            const normalized = String(imageUrl).trim().replace(/\\/g, '/');
+            if (!normalized) {
+                return fallbackImage;
+            }
+
+            if (/^https?:\/\//i.test(normalized) || normalized.startsWith('/')) {
+                return normalized;
+            }
+
+            return `/${normalized.replace(/^\.\//, '')}`;
+        }
+
         // Load news articles from database
         async function loadNewsArticles() {
             try {
@@ -134,7 +153,7 @@
                             day: 'numeric',
                             year: 'numeric'
                         });
-                        const imageUrl = article.image_url || 'BRIDAPS IMAGES/School logo.png';
+                        const imageUrl = resolveArticleImageUrl(article.image_url);
                         const hasFullContent = article.content && article.content.trim().length > 0;
                         
                         return `

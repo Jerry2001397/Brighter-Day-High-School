@@ -5,10 +5,45 @@ const { isAuthenticated } = require('../middleware/auth');
 const multer = require('multer');
 const path = require('path');
 
+function normalizeImageUrl(imageUrl) {
+    if (!imageUrl) {
+        return null;
+    }
+
+    const rawValue = String(imageUrl).trim();
+    if (!rawValue) {
+        return null;
+    }
+
+    if (/^https?:\/\//i.test(rawValue)) {
+        return rawValue;
+    }
+
+    let normalized = rawValue.replace(/\\/g, '/').replace(/^\.\//, '');
+
+    if (normalized.startsWith('/uploads/')) {
+        return normalized;
+    }
+
+    if (normalized.startsWith('uploads/')) {
+        return `/${normalized}`;
+    }
+
+    if (normalized.startsWith('/news/')) {
+        return `/uploads${normalized}`;
+    }
+
+    if (normalized.startsWith('news/')) {
+        return `/uploads/${normalized}`;
+    }
+
+    return normalized.startsWith('/') ? normalized : `/${normalized}`;
+}
+
 // Configure multer for image uploads
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'uploads/news/');
+        cb(null, path.join(__dirname, '..', 'uploads', 'news'));
     },
     filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -43,7 +78,12 @@ router.get('/api/articles', async (req, res) => {
             WHERE n.is_published = TRUE
             ORDER BY n.published_date DESC
         `);
-        res.json(result.rows);
+        const articles = result.rows.map(article => ({
+            ...article,
+            image_url: normalizeImageUrl(article.image_url)
+        }));
+
+        res.json(articles);
     } catch (error) {
         console.error('Fetch articles error:', error);
         res.status(500).json({ error: 'Failed to fetch articles' });
@@ -87,7 +127,10 @@ router.get('/api/articles/:id', async (req, res) => {
         // Increment views
         await db.query('UPDATE news_articles SET views = views + 1 WHERE id = $1', [req.params.id]);
 
-        res.json(result.rows[0]);
+        res.json({
+            ...result.rows[0],
+            image_url: normalizeImageUrl(result.rows[0].image_url)
+        });
     } catch (error) {
         console.error('Fetch article error:', error);
         res.status(500).json({ error: 'Failed to fetch article' });
@@ -118,7 +161,7 @@ router.get('/api/admin/articles', isAuthenticated, async (req, res) => {
 // Create new article
 router.post('/api/admin/articles', isAuthenticated, upload.single('image'), async (req, res) => {
     const { title, category, excerpt, content, published_date, is_published } = req.body;
-    const image_url = req.file ? '/uploads/news/' + req.file.filename : null;
+    const image_url = req.file ? normalizeImageUrl('/uploads/news/' + req.file.filename) : null;
 
     try {
         const result = await db.query(`
@@ -137,7 +180,9 @@ router.post('/api/admin/articles', isAuthenticated, upload.single('image'), asyn
 // Update article
 router.put('/api/admin/articles/:id', isAuthenticated, upload.single('image'), async (req, res) => {
     const { title, category, excerpt, content, published_date, is_published } = req.body;
-    const image_url = req.file ? '/uploads/news/' + req.file.filename : req.body.existing_image;
+    const image_url = req.file
+        ? normalizeImageUrl('/uploads/news/' + req.file.filename)
+        : normalizeImageUrl(req.body.existing_image);
 
     try {
         await db.query(`

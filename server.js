@@ -20,9 +20,9 @@ app.use(session({
 }));
 
 // Serve static files
-app.use(express.static('.'));
-app.use('/public', express.static('public'));
-app.use('/uploads', express.static('uploads'));
+app.use(express.static(__dirname));
+app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Create uploads directory if it doesn't exist
 const fs = require('fs');
