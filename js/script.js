@@ -256,17 +256,34 @@ function toggleMembers(button) {
 }
 
 function updateGraduateTotals() {
-    const totalElements = document.querySelectorAll('.graduate-total[data-auto-total="true"]');
+    const classCards = document.querySelectorAll('.graduating-class');
+    let allGraduatesCount = 0;
 
-    totalElements.forEach(totalElement => {
-        const classCard = totalElement.closest('.graduating-class');
-        if (!classCard) {
-            return;
+    classCards.forEach(classCard => {
+        const graduateItems = Array.from(classCard.querySelectorAll('.members-list li')).filter(item => {
+            const name = item.textContent.trim();
+            return name.length > 0 && !name.startsWith('[');
+        });
+
+        const classCount = graduateItems.length;
+        allGraduatesCount += classCount;
+
+        const classTotalElement = classCard.querySelector('.graduate-total[data-auto-total="true"]');
+        if (classTotalElement) {
+            classTotalElement.textContent = String(classCount);
         }
-
-        const graduateItems = classCard.querySelectorAll('.members-list li');
-        totalElement.textContent = String(graduateItems.length);
     });
+
+    const totalGraduatesStat = document.querySelector('#totalGraduatesStat[data-auto-total-graduates="true"]');
+    if (totalGraduatesStat) {
+        const currentValue = parseInt((totalGraduatesStat.dataset.currentValue || totalGraduatesStat.textContent).replace(/\D/g, ''), 10) || 0;
+        totalGraduatesStat.dataset.currentValue = String(allGraduatesCount);
+
+        if (currentValue !== allGraduatesCount) {
+            totalGraduatesStat.textContent = '0';
+            animateCounter(totalGraduatesStat, allGraduatesCount, 1500);
+        }
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -275,9 +292,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const classCards = document.querySelectorAll('.graduating-class');
     classCards.forEach(classCard => {
         const membersList = classCard.querySelector('.members-list');
-        const totalElement = classCard.querySelector('.graduate-total[data-auto-total="true"]');
 
-        if (!membersList || !totalElement || typeof MutationObserver === 'undefined') {
+        if (!membersList || typeof MutationObserver === 'undefined') {
             return;
         }
 
