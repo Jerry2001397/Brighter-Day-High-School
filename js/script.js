@@ -255,4 +255,38 @@ function toggleMembers(button) {
     }
 }
 
+function updateGraduateTotals() {
+    const totalElements = document.querySelectorAll('.graduate-total[data-auto-total="true"]');
+
+    totalElements.forEach(totalElement => {
+        const classCard = totalElement.closest('.graduating-class');
+        if (!classCard) {
+            return;
+        }
+
+        const graduateItems = classCard.querySelectorAll('.members-list li');
+        totalElement.textContent = String(graduateItems.length);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    updateGraduateTotals();
+
+    const classCards = document.querySelectorAll('.graduating-class');
+    classCards.forEach(classCard => {
+        const membersList = classCard.querySelector('.members-list');
+        const totalElement = classCard.querySelector('.graduate-total[data-auto-total="true"]');
+
+        if (!membersList || !totalElement || typeof MutationObserver === 'undefined') {
+            return;
+        }
+
+        const observer = new MutationObserver(() => {
+            updateGraduateTotals();
+        });
+
+        observer.observe(membersList, { childList: true, subtree: true });
+    });
+});
+
 console.log('Brighter Day School website loaded successfully!');
