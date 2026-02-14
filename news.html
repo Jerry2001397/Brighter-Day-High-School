@@ -118,33 +118,41 @@
 
     <script src="js/script.js"></script>
     <script>
-        function resolveArticleImageUrl(imageUrl) {
-            const fallbackImage = 'BRIDAPS IMAGES/School logo.png';
+        const FALLBACK_IMAGE_URL = '/BRIDAPS%20IMAGES/School%20logo.png';
 
+        function encodePublicPath(url) {
+            if (!url) {
+                return url;
+            }
+
+            return encodeURI(url).replace(/#/g, '%23');
+        }
+
+        function resolveArticleImageUrl(imageUrl) {
             if (!imageUrl) {
-                return fallbackImage;
+                return FALLBACK_IMAGE_URL;
             }
 
             const normalized = String(imageUrl).trim().replace(/\\/g, '/');
             if (!normalized) {
-                return fallbackImage;
+                return FALLBACK_IMAGE_URL;
             }
 
             if (/^https?:\/\//i.test(normalized) || normalized.startsWith('/')) {
-                return normalized;
+                return encodePublicPath(normalized);
             }
 
-            return `/${normalized.replace(/^\.\//, '')}`;
+            return encodePublicPath(`/${normalized.replace(/^\.\//, '')}`);
         }
 
         function handleArticleImageError(img) {
-            if (img.dataset.hasLoaded === 'true') {
+            if (img.dataset.fallbackApplied === 'true') {
                 return;
             }
 
             const retryCount = Number(img.dataset.retryCount || '0');
 
-            if (retryCount < 1) {
+            if (retryCount < 2) {
                 img.dataset.retryCount = String(retryCount + 1);
                 const originalSrc = (img.dataset.originalSrc || img.getAttribute('src') || '').split('?')[0];
                 img.dataset.originalSrc = originalSrc;
@@ -152,8 +160,8 @@
                 return;
             }
 
-            img.onerror = null;
-            img.src = 'BRIDAPS IMAGES/School logo.png';
+            img.dataset.fallbackApplied = 'true';
+            img.src = FALLBACK_IMAGE_URL;
         }
 
         function handleArticleImageLoad(img) {
@@ -183,7 +191,7 @@
                         return `
                             <article class="news-card" id="news-${article.id}">
                                 <div class="news-image">
-                                    <img src="${imageUrl}" alt="${article.title}" data-original-src="${imageUrl}" data-retry-count="0" data-has-loaded="false" onload="handleArticleImageLoad(this)" onerror="handleArticleImageError(this)">
+                                    <img src="${imageUrl}" alt="${article.title}" data-original-src="${imageUrl}" data-retry-count="0" data-has-loaded="false" data-fallback-applied="false" onload="handleArticleImageLoad(this)" onerror="handleArticleImageError(this)">
                                 </div>
                                 <div class="news-content">
                                     <div class="news-top-meta">
