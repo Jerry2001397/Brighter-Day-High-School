@@ -145,6 +145,7 @@
             return encodePublicPath(`/${normalized.replace(/^\.\//, '')}`);
         }
 
+
         function handleArticleImageError(img) {
             if (img.dataset.fallbackApplied === 'true') {
                 return;
@@ -152,14 +153,18 @@
 
             const retryCount = Number(img.dataset.retryCount || '0');
 
-            if (retryCount < 2) {
+            // Increase retries and add a delay before fallback
+            if (retryCount < 5) {
                 img.dataset.retryCount = String(retryCount + 1);
                 const originalSrc = (img.dataset.originalSrc || img.getAttribute('src') || '').split('?')[0];
                 img.dataset.originalSrc = originalSrc;
-                img.src = `${originalSrc}?retry=${Date.now()}`;
+                setTimeout(() => {
+                    img.src = `${originalSrc}?retry=${Date.now()}`;
+                }, 1200); // 1.2s delay before retry
                 return;
             }
 
+            // Only fallback if image truly fails after all retries
             img.dataset.fallbackApplied = 'true';
             img.src = FALLBACK_IMAGE_URL;
         }
