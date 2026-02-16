@@ -221,7 +221,10 @@
                                     </details>
                                     ` : ''}
                                     <div class="news-meta">
-                                        <span><i class="fas fa-user"></i> ${article.author || 'Administration'}</span>
+                                        <span><i class="fas fa-user"></i> 
+                                            ${article.author_name ? article.author_name : (article.author || 'Administration')}
+                                            ${article.author_position ? `<span class='author-position'>, ${article.author_position}</span>` : ''}
+                                        </span>
                                         <span><i class="fas fa-eye"></i> ${article.views || 0} views</span>
                                         <div class="news-actions">
                                             <button type="button" class="news-action-btn" data-article-id="${article.id}" data-article-title="${article.title}" onclick="shareNewsLink(this)">

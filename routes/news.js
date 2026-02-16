@@ -113,6 +113,7 @@ router.get('/api/articles', async (req, res) => {
             SELECT 
                 n.id, n.title, n.category, n.excerpt, n.content, 
                 n.image_url, n.published_date, n.views,
+                n.author_name, n.author_position,
                 a.full_name as author
             FROM news_articles n
             LEFT JOIN admin_users a ON n.author_id = a.id
@@ -187,6 +188,7 @@ router.get('/api/admin/articles', isAuthenticated, async (req, res) => {
             SELECT 
                 n.id, n.title, n.category, n.excerpt, n.published_date, 
                 n.is_published, n.views, n.created_at,
+                n.author_name, n.author_position,
                 a.full_name as author
             FROM news_articles n
             LEFT JOIN admin_users a ON n.author_id = a.id
@@ -200,8 +202,9 @@ router.get('/api/admin/articles', isAuthenticated, async (req, res) => {
 });
 
 // Create new article
+
 router.post('/api/admin/articles', isAuthenticated, upload.single('image'), async (req, res) => {
-    const { title, category, excerpt, content, published_date, is_published } = req.body;
+    const { title, category, excerpt, content, published_date, is_published, author_name, author_position } = req.body;
     const image_url = req.file ? normalizeImageUrl('/public/news/' + req.file.filename) : null;
 
     if (req.file) {
@@ -213,10 +216,10 @@ router.post('/api/admin/articles', isAuthenticated, upload.single('image'), asyn
 
     try {
         const result = await db.query(`
-            INSERT INTO news_articles (title, category, excerpt, content, image_url, author_id, published_date, is_published)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            INSERT INTO news_articles (title, category, excerpt, content, image_url, author_id, published_date, is_published, author_name, author_position)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
             RETURNING id
-        `, [title, category, excerpt, content, image_url, req.session.adminId, published_date, is_published || true]);
+        `, [title, category, excerpt, content, image_url, req.session.adminId, published_date, is_published || true, author_name, author_position]);
 
         res.json({ success: true, id: result.rows[0].id, message: 'Article created successfully' });
     } catch (error) {
@@ -226,8 +229,9 @@ router.post('/api/admin/articles', isAuthenticated, upload.single('image'), asyn
 });
 
 // Update article
+
 router.put('/api/admin/articles/:id', isAuthenticated, upload.single('image'), async (req, res) => {
-    const { title, category, excerpt, content, published_date, is_published } = req.body;
+    const { title, category, excerpt, content, published_date, is_published, author_name, author_position } = req.body;
     const image_url = req.file
         ? normalizeImageUrl('/public/news/' + req.file.filename)
         : normalizeImageUrl(req.body.existing_image);
@@ -243,9 +247,9 @@ router.put('/api/admin/articles/:id', isAuthenticated, upload.single('image'), a
         await db.query(`
             UPDATE news_articles 
             SET title = $1, category = $2, excerpt = $3, content = $4, 
-                image_url = $5, published_date = $6, is_published = $7
-            WHERE id = $8
-        `, [title, category, excerpt, content, image_url, published_date, is_published, req.params.id]);
+                image_url = $5, published_date = $6, is_published = $7, author_name = $8, author_position = $9
+            WHERE id = $10
+        `, [title, category, excerpt, content, image_url, published_date, is_published, author_name, author_position, req.params.id]);
 
         res.json({ success: true, message: 'Article updated successfully' });
     } catch (error) {

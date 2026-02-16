@@ -187,6 +187,9 @@ function openNewsModal(id = null) {
     
     if (id) {
         loadNewsForEdit(id);
+    } else {
+        document.getElementById('newsAuthorName').value = '';
+        document.getElementById('newsAuthorPosition').value = '';
     }
 }
 
@@ -208,6 +211,8 @@ async function loadNewsForEdit(id) {
         document.getElementById('newsPublished').checked = article.is_published;
         document.getElementById('existingImage').value = article.image_url || '';
         document.getElementById('newsModalTitle').textContent = 'Edit News Article';
+        document.getElementById('newsAuthorName').value = article.author_name || '';
+        document.getElementById('newsAuthorPosition').value = article.author_position || '';
     } catch (error) {
         console.error('Error loading article:', error);
         alert('Failed to load article for editing');
@@ -227,6 +232,8 @@ document.getElementById('newsForm').addEventListener('submit', async (e) => {
     formData.append('content', document.getElementById('newsContent').value);
     formData.append('published_date', document.getElementById('newsDate').value);
     formData.append('is_published', document.getElementById('newsPublished').checked);
+    formData.append('author_name', document.getElementById('newsAuthorName').value);
+    formData.append('author_position', document.getElementById('newsAuthorPosition').value);
     
     const imageFile = document.getElementById('newsImage').files[0];
     if (imageFile) {

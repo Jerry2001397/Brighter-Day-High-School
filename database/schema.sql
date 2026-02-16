@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS news_articles (
     excerpt TEXT NOT NULL,
     content TEXT NOT NULL,
     image_url VARCHAR(255),
+    author_name VARCHAR(100),
+    author_position VARCHAR(100),
     author_id INT,
     published_date DATE NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
