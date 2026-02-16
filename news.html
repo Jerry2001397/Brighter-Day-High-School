@@ -147,7 +147,8 @@
 
 
         function handleArticleImageError(img) {
-            if (img.dataset.fallbackApplied === 'true') {
+            if (img.dataset.fallbackApplied === 'true' || img.dataset.hasLoaded === 'true') {
+                // If fallback already applied, or image has loaded once, do nothing
                 return;
             }
 
@@ -164,7 +165,7 @@
                 return;
             }
 
-            // Only fallback if image truly fails after all retries
+            // Only fallback if image truly fails after all retries and never loaded
             img.dataset.fallbackApplied = 'true';
             img.src = FALLBACK_IMAGE_URL;
         }
