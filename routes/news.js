@@ -112,7 +112,7 @@ router.get('/api/articles', async (req, res) => {
         const result = await db.query(`
             SELECT 
                 n.id, n.title, n.category, n.excerpt, n.content, 
-                n.image_url, n.published_date, n.views,
+                n.image_url, n.published_date, n.views, n.created_at,
                 n.author_name, n.author_position,
                 a.full_name as author
             FROM news_articles n

@@ -206,6 +206,7 @@
                                         </div>
                                         <div class="news-inline-date">
                                             <i class="fas fa-calendar-alt"></i> ${fullDate}
+                                            ${article.created_at ? `<span class="news-time">at ${new Date(article.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>` : ''}
                                         </div>
                                     </div>
                                     <h3 class="news-title">${article.title}</h3>
