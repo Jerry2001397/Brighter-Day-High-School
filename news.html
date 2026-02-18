@@ -179,10 +179,10 @@
         async function loadNewsArticles() {
             try {
                 const response = await fetch('/news/api/articles');
-                const articles = await response.json();
-                
+                let articles = await response.json();
+                // Sort articles by published_date descending
+                articles = articles.sort((a, b) => new Date(b.published_date) - new Date(a.published_date));
                 const newsGrid = document.getElementById('newsGrid');
-                
                 if (articles.length > 0) {
                     newsGrid.innerHTML = articles.map(article => {
                         const date = new Date(article.published_date);
