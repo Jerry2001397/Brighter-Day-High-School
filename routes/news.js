@@ -214,8 +214,7 @@ router.post('/api/admin/articles', isAuthenticated, upload.single('image'), asyn
             stream.on('finish', resolve);
             stream.on('error', reject);
         });
-        // Make the file public
-        await blob.makePublic();
+        // No need to make the file public; bucket-level permissions apply
         image_url = `https://storage.googleapis.com/${bucket.name}/${uniqueName}`;
     }
 
@@ -248,7 +247,7 @@ router.put('/api/admin/articles/:id', isAuthenticated, upload.single('image'), a
             stream.on('finish', resolve);
             stream.on('error', reject);
         });
-        await blob.makePublic();
+        // No need to make the file public; bucket-level permissions apply
         image_url = `https://storage.googleapis.com/${bucket.name}/${uniqueName}`;
     }
 
