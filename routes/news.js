@@ -2,9 +2,11 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
 const { isAuthenticated } = require('../middleware/auth');
+
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const bucket = require('../config/gcs');
 
 const newsUploadsDir = path.join(__dirname, '..', 'uploads', 'news');
 const newsPublicDir = path.join(__dirname, '..', 'public', 'news');
@@ -86,20 +88,9 @@ function resolveImageUrlForResponse(imageUrl) {
     return normalized;
 }
 
-// Configure multer for image uploads
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        fs.mkdirSync(newsPublicDir, { recursive: true });
-        cb(null, newsPublicDir);
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, 'news-' + uniqueSuffix + path.extname(file.originalname));
-    }
-});
-
+// Configure multer for memory storage (buffer upload)
 const upload = multer({
-    storage: storage,
+    storage: multer.memoryStorage(),
     limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
     fileFilter: function (req, file, cb) {
         const filetypes = /jpeg|jpg|png|gif/;
@@ -211,13 +202,21 @@ router.get('/api/admin/articles', isAuthenticated, async (req, res) => {
 
 router.post('/api/admin/articles', isAuthenticated, upload.single('image'), async (req, res) => {
     const { title, category, excerpt, content, published_date, is_published, author_name, author_position } = req.body;
-    const image_url = req.file ? normalizeImageUrl('/public/news/' + req.file.filename) : null;
 
+    let image_url = null;
     if (req.file) {
-        const savedImagePath = path.join(newsPublicDir, req.file.filename);
-        if (!fs.existsSync(savedImagePath)) {
-            return res.status(500).json({ error: 'Image upload failed. Please try again.' });
-        }
+        // Upload to Google Cloud Storage
+        const uniqueName = 'news-' + Date.now() + '-' + Math.round(Math.random() * 1E9) + path.extname(req.file.originalname);
+        const blob = bucket.file(uniqueName);
+        const stream = blob.createWriteStream({ resumable: false, contentType: req.file.mimetype });
+        stream.end(req.file.buffer);
+        await new Promise((resolve, reject) => {
+            stream.on('finish', resolve);
+            stream.on('error', reject);
+        });
+        // Make the file public
+        await blob.makePublic();
+        image_url = `https://storage.googleapis.com/${bucket.name}/${uniqueName}`;
     }
 
     try {
@@ -238,15 +237,19 @@ router.post('/api/admin/articles', isAuthenticated, upload.single('image'), asyn
 
 router.put('/api/admin/articles/:id', isAuthenticated, upload.single('image'), async (req, res) => {
     const { title, category, excerpt, content, published_date, is_published, author_name, author_position } = req.body;
-    const image_url = req.file
-        ? normalizeImageUrl('/public/news/' + req.file.filename)
-        : normalizeImageUrl(req.body.existing_image);
-
+    let image_url = req.body.existing_image;
     if (req.file) {
-        const savedImagePath = path.join(newsPublicDir, req.file.filename);
-        if (!fs.existsSync(savedImagePath)) {
-            return res.status(500).json({ error: 'Image upload failed. Please try again.' });
-        }
+        // Upload to Google Cloud Storage
+        const uniqueName = 'news-' + Date.now() + '-' + Math.round(Math.random() * 1E9) + path.extname(req.file.originalname);
+        const blob = bucket.file(uniqueName);
+        const stream = blob.createWriteStream({ resumable: false, contentType: req.file.mimetype });
+        stream.end(req.file.buffer);
+        await new Promise((resolve, reject) => {
+            stream.on('finish', resolve);
+            stream.on('error', reject);
+        });
+        await blob.makePublic();
+        image_url = `https://storage.googleapis.com/${bucket.name}/${uniqueName}`;
     }
 
     try {
