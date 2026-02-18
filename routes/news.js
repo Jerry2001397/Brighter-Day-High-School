@@ -58,22 +58,28 @@ function resolveImageUrlForResponse(imageUrl) {
         return normalized;
     }
 
+    let filePath = null;
     if (normalized.startsWith('/public/news/')) {
         const filename = path.basename(normalized);
-        const publicPath = path.join(newsPublicDir, filename);
-        return fs.existsSync(publicPath) ? normalized : null;
+        filePath = path.join(newsPublicDir, filename);
+        if (fs.existsSync(filePath)) {
+            const mtime = fs.statSync(filePath).mtime.getTime();
+            return `${normalized}?v=${mtime}`;
+        }
+        return null;
     }
 
     if (normalized.startsWith('/uploads/news/')) {
         const filename = path.basename(normalized);
-        const uploadsPath = path.join(newsUploadsDir, filename);
-        if (fs.existsSync(uploadsPath)) {
-            return normalized;
+        filePath = path.join(newsUploadsDir, filename);
+        if (fs.existsSync(filePath)) {
+            const mtime = fs.statSync(filePath).mtime.getTime();
+            return `${normalized}?v=${mtime}`;
         }
-
         const publicPath = path.join(newsPublicDir, filename);
         if (fs.existsSync(publicPath)) {
-            return `/public/news/${filename}`;
+            const mtime = fs.statSync(publicPath).mtime.getTime();
+            return `/public/news/${filename}?v=${mtime}`;
         }
     }
 
