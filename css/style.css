@@ -374,7 +374,7 @@ body {
    =================================== */
 .page-header {
     height: 40vh;
-    background: linear-gradient(135deg, var(--primary-grey) 0%, var(--dark-grey) 100%);
+    background: url('../BRIDAPS IMAGES/page header and other images/Page Header bachground image 1.png') center center/cover no-repeat !important;
     position: relative;
     display: flex;
     align-items: center;
