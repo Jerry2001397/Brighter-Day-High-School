@@ -872,18 +872,22 @@ body {
 
 .staff-card {
     background: var(--white);
-    border-radius: 10px;
+    border-radius: 6px;
     overflow: hidden;
-    box-shadow: 0 3px 15px var(--shadow);
+    box-shadow: none;
     transition: all 0.3s ease;
-    border: 4px solid var(--primary-yellow);
-    outline: 4px solid var(--primary-grey);
-    outline-offset: -8px;
+    border: none;
+    outline: none;
+    width: 270px;
+    min-width: 220px;
+    max-width: 100%;
+    margin: 0 auto 2rem auto;
+    padding: 0.5rem 0 1.2rem 0;
 }
 
 .staff-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 10px 30px var(--shadow-hover);
+    transform: none;
+    box-shadow: none;
 }
 
 .staff-image {
@@ -908,21 +912,22 @@ body {
 }
 
 .admin-contact {
-    padding: 1rem 1.5rem;
-    background: linear-gradient(135deg, var(--primary-yellow) 0%, #FFC533 100%);
+    padding: 0.5rem 0 0 0;
+    background: none;
     display: flex;
-    justify-content: space-around;
-    gap: 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
 }
 
 .admin-contact p {
     margin: 0;
     color: var(--dark-grey);
-    font-size: 0.9rem;
-    font-weight: 600;
+    font-size: 0.92rem;
+    font-weight: 500;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
 }
 
 .admin-contact i {
