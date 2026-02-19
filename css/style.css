@@ -872,17 +872,24 @@ body {
 
 .staff-card {
     background: var(--white);
-    border-radius: 6px;
+    border-radius: 8px;
     overflow: hidden;
     box-shadow: none;
     transition: all 0.3s ease;
-    border: none;
-    outline: none;
+    border-width: 2px;
+    border-style: solid;
+    border-top-color: #FDB913;
+    border-left-color: #FDB913;
+    border-bottom-color: #5A6268;
+    border-right-color: #5A6268;
+    border-image: none;
     width: 270px;
     min-width: 220px;
     max-width: 100%;
     margin: 0 auto 2rem auto;
     padding: 0.5rem 0 1.2rem 0;
+    box-shadow: 0 0 8px 2px rgba(253,185,19,0.15), 0 0 8px 2px rgba(90,98,104,0.15);
+    border-radius: 8px;
 }
 
 .staff-card:hover {
