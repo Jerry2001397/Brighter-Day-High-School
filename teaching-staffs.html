@@ -9,6 +9,29 @@
 </head>
 <body>
     <!-- Navigation -->
+
+    <!-- Search Box -->
+    <div class="search-container" style="max-width: 600px; margin: 90px auto 30px auto; display: flex; justify-content: center;">
+        <input type="text" id="staffSearch" placeholder="Search teacher name..." style="width: 100%; padding: 0.7rem 1rem; border-radius: 6px; border: 2px solid #FDB913; font-size: 1.1rem; box-shadow: 0 0 6px 1px rgba(253,185,19,0.15);">
+    </div>
+    <div id="staffSearchMsg" style="display:none; color:#c00; text-align:center; font-size:1.05rem; margin-bottom:20px; font-weight:500;">We do not have a teacher with such name.</div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('staffSearch');
+        const msg = document.getElementById('staffSearchMsg');
+        searchInput.addEventListener('input', function() {
+            const query = searchInput.value.toLowerCase();
+            let found = false;
+            document.querySelectorAll('.staff-card').forEach(card => {
+                const name = card.querySelector('h3')?.textContent?.toLowerCase() || '';
+                const match = name.includes(query);
+                card.style.display = match ? '' : 'none';
+                if (match) found = true;
+            });
+            msg.style.display = (!found && query.length > 0) ? 'block' : 'none';
+        });
+    });
+    </script>
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo">
