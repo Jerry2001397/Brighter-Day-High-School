@@ -4,11 +4,11 @@
 
 ## About This Project
 
-This is the official website for **Brighter Day Elementary, Junior & Senior High School** located in Sou-Clinc Community, Paynesville, Liberia. The website showcases the school's programs, staff, graduates, and provides essential information to students, parents, and the community.
+This is the official website for **Brighter Day Elementary, Junior & Senior High School** located in Soul Clinc Community, Paynesville, Liberia. The website showcases the school's programs, staff, graduates, and provides essential information to students, parents, and the community.
 
 ## Features
 
-- **Professional Design**: Modern, responsive website design using the school's official colors (Yellow and Blue)
+- **Professional Design**: Modern, responsive website design using the school's official colors (Yellow and Grey)
 - **Multi-Page Navigation**: Easy access to all important information through an intuitive navigation menu
 - **Mobile Responsive**: Fully responsive design that works on all devices
 - **Interactive Elements**: Smooth animations, hover effects, and interactive navigation
@@ -27,9 +27,9 @@ This is the official website for **Brighter Day Elementary, Junior & Senior High
 
 The website uses the official school colors from the BRIDAPS logo:
 - **Primary Yellow**: #FDB913
-- **Primary Blue**: #2E86C1
-- **Dark Blue**: #1B4F72
-- **Light Blue**: #5DADE2
+- **Primary Grey**: #2E86C1
+- **Dark Grey**: #1B4F72
+- **Light Grey**: #5DADE2
 
 ## Technologies Used
 
