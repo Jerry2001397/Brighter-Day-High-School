@@ -2010,46 +2010,6 @@ body {
     background: #0077b5;
 }
 
-.footer-qr-section {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-.footer-qr-link {
-    display: inline-flex;
-    padding: 0.65rem;
-    background: #ffffff;
-    border-radius: 14px;
-    border: 2px solid rgba(253, 185, 19, 0.45);
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-    margin-bottom: 0.85rem;
-}
-
-.footer-qr-link:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.24);
-}
-
-.footer-qr-image {
-    display: block;
-    width: 140px;
-    height: 140px;
-}
-
-@media (max-width: 768px) {
-    .footer-qr-section {
-        align-items: center;
-        text-align: center;
-    }
-
-    .footer-qr-link {
-        margin-left: auto;
-        margin-right: auto;
-    }
-}
-
 .social-links a:hover {
     transform: translateY(-3px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
