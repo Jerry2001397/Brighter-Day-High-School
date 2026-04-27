@@ -261,6 +261,10 @@ function isIosDevice() {
     return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
 }
 
+function isInstallSupportedContext() {
+    return window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+}
+
 function isStandaloneMode() {
     return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 }
@@ -287,7 +291,7 @@ function createInstallAppButton() {
         font-size: 0.95rem;
         cursor: pointer;
         z-index: 1001;
-        display: none;
+        display: block;
         box-shadow: 0 10px 24px rgba(16, 42, 67, 0.22);
     `;
 
@@ -307,9 +311,17 @@ function createInstallAppButton() {
             return;
         }
 
+        if (!isInstallSupportedContext()) {
+            window.alert('App install is not available from a local file preview. Open the website from your live domain or localhost in a browser to install BRIDAPS.');
+            return;
+        }
+
         if (isIosDevice() && !isStandaloneMode()) {
             window.alert('On iPhone or iPad, tap Share in Safari, then choose Add to Home Screen to install this website as an app.');
+            return;
         }
+
+        window.alert('Install becomes available when your browser supports app installation for this site. Use Chrome or Edge on Android/Desktop, or Safari Add to Home Screen on iPhone.');
     });
 
     document.body.appendChild(button);
@@ -324,14 +336,29 @@ function setupAppInstallPrompt() {
         return;
     }
 
-    if (isIosDevice()) {
-        installButton.style.display = 'block';
+    installButton.style.display = 'block';
+
+    if (!isInstallSupportedContext()) {
+        installButton.innerHTML = '<i class="fas fa-mobile-alt"></i> Install BRIDAPS';
+        installButton.title = 'Open this site on localhost or HTTPS to install it as an app.';
+        return;
     }
+
+    if (isIosDevice()) {
+        installButton.innerHTML = '<i class="fas fa-mobile-alt"></i> Add BRIDAPS to Home Screen';
+        installButton.title = 'Use Safari Share > Add to Home Screen.';
+        return;
+    }
+
+    installButton.innerHTML = '<i class="fas fa-mobile-alt"></i> Install BRIDAPS';
+    installButton.title = 'Install BRIDAPS as an app on this device.';
 
     window.addEventListener('beforeinstallprompt', (event) => {
         event.preventDefault();
         deferredInstallPrompt = event;
         installButton.style.display = 'block';
+        installButton.innerHTML = '<i class="fas fa-mobile-alt"></i> Install BRIDAPS';
+        installButton.title = 'Install BRIDAPS as an app on this device.';
     });
 
     window.addEventListener('appinstalled', () => {
