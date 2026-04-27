@@ -255,4 +255,106 @@ function toggleMembers(button) {
     }
 }
 
+let deferredInstallPrompt = null;
+
+function isIosDevice() {
+    return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+}
+
+function isStandaloneMode() {
+    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
+function createInstallAppButton() {
+    if (document.querySelector('.install-app-btn')) {
+        return document.querySelector('.install-app-btn');
+    }
+
+    const button = document.createElement('button');
+    button.className = 'install-app-btn';
+    button.type = 'button';
+    button.innerHTML = '<i class="fas fa-mobile-alt"></i> Install App';
+    button.style.cssText = `
+        position: fixed;
+        bottom: 30px;
+        left: 30px;
+        padding: 14px 18px;
+        border: none;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #FDB913, #f39c12);
+        color: #102a43;
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+        z-index: 1001;
+        display: none;
+        box-shadow: 0 10px 24px rgba(16, 42, 67, 0.22);
+    `;
+
+    button.addEventListener('click', async () => {
+        if (deferredInstallPrompt) {
+            deferredInstallPrompt.prompt();
+            const promptEvent = deferredInstallPrompt;
+            deferredInstallPrompt = null;
+            button.style.display = 'none';
+
+            try {
+                await promptEvent.userChoice;
+            } catch (error) {
+                console.warn('Install prompt was dismissed or failed.', error);
+            }
+
+            return;
+        }
+
+        if (isIosDevice() && !isStandaloneMode()) {
+            window.alert('On iPhone or iPad, tap Share in Safari, then choose Add to Home Screen to install this website as an app.');
+        }
+    });
+
+    document.body.appendChild(button);
+    return button;
+}
+
+function setupAppInstallPrompt() {
+    const installButton = createInstallAppButton();
+
+    if (isStandaloneMode()) {
+        installButton.style.display = 'none';
+        return;
+    }
+
+    if (isIosDevice()) {
+        installButton.style.display = 'block';
+    }
+
+    window.addEventListener('beforeinstallprompt', (event) => {
+        event.preventDefault();
+        deferredInstallPrompt = event;
+        installButton.style.display = 'block';
+    });
+
+    window.addEventListener('appinstalled', () => {
+        deferredInstallPrompt = null;
+        installButton.style.display = 'none';
+    });
+}
+
+async function registerServiceWorker() {
+    if (!('serviceWorker' in navigator) || window.location.protocol === 'file:') {
+        return;
+    }
+
+    try {
+        await navigator.serviceWorker.register('/sw.js');
+    } catch (error) {
+        console.warn('Service worker registration failed.', error);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    setupAppInstallPrompt();
+    registerServiceWorker();
+});
+
 console.log('Brighter Day School website loaded successfully!');

@@ -1,0 +1,19 @@
+{
+  "name": "BRIDAPS",
+  "short_name": "BRIDAPS",
+  "description": "Brighter Day High School website with school information, news, graduates, and contact details.",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f6fbff",
+  "theme_color": "#1B4F72",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/BRIDAPS IMAGES/School logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
