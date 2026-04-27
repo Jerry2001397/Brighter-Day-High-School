@@ -10,7 +10,10 @@ const CORE_ASSETS = [
     '/contact.html',
     '/css/style.css',
     '/js/script.js',
-    '/BRIDAPS%20IMAGES/School%20logo.png',
+    '/assets/icons/app-icon-192.png',
+    '/assets/icons/app-icon-512.png',
+    '/assets/icons/apple-touch-icon.png',
+    '/assets/icons/favicon-32.png',
     '/manifest.webmanifest'
 ];
 

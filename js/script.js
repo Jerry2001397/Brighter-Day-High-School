@@ -269,6 +269,134 @@ function isStandaloneMode() {
     return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 }
 
+async function handleInstallAction(triggerButton) {
+    if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        const promptEvent = deferredInstallPrompt;
+        deferredInstallPrompt = null;
+
+        if (triggerButton) {
+            triggerButton.style.display = 'none';
+        }
+
+        try {
+            await promptEvent.userChoice;
+        } catch (error) {
+            console.warn('Install prompt was dismissed or failed.', error);
+        }
+
+        return;
+    }
+
+    if (!isInstallSupportedContext()) {
+        window.alert('App install is not available from a local file preview. Open the website from your live domain or localhost in a browser to install BRIDAPS.');
+        return;
+    }
+
+    if (isIosDevice() && !isStandaloneMode()) {
+        window.alert('On iPhone or iPad, tap Share in Safari, then choose Add to Home Screen to install this website as an app.');
+        return;
+    }
+
+    window.alert('Install becomes available when your browser supports app installation for this site. Use Chrome or Edge on Android/Desktop, or Safari Add to Home Screen on iPhone.');
+}
+
+function closeMobileMenu() {
+    if (hamburger && navMenu) {
+        hamburger.classList.remove('active');
+        navMenu.classList.remove('active');
+    }
+}
+
+function createMobileInstallBanner() {
+    if (document.querySelector('.mobile-install-banner')) {
+        return document.querySelector('.mobile-install-banner');
+    }
+
+    const banner = document.createElement('div');
+    banner.className = 'mobile-install-banner';
+    banner.style.cssText = `
+        position: sticky;
+        top: 76px;
+        z-index: 998;
+        display: none;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 16px;
+        background: linear-gradient(135deg, #102a43, #1B4F72);
+        color: #ffffff;
+        box-shadow: 0 8px 18px rgba(16, 42, 67, 0.24);
+    `;
+
+    const text = document.createElement('div');
+    text.style.cssText = 'display:flex; flex-direction:column; gap:2px; min-width:0;';
+    text.innerHTML = '<strong style="font-size:0.95rem;">Install BRIDAPS</strong><span style="font-size:0.8rem; opacity:0.88;">Save the school website as an app on your phone.</span>';
+
+    const action = document.createElement('button');
+    action.type = 'button';
+    action.className = 'mobile-install-banner-btn';
+    action.style.cssText = `
+        border: none;
+        border-radius: 999px;
+        background: #FDB913;
+        color: #102a43;
+        font-weight: 700;
+        padding: 10px 14px;
+        cursor: pointer;
+        white-space: nowrap;
+        flex-shrink: 0;
+    `;
+    action.textContent = 'Install';
+    action.addEventListener('click', () => handleInstallAction(action));
+
+    banner.appendChild(text);
+    banner.appendChild(action);
+
+    const navbar = document.querySelector('.navbar');
+    if (navbar && navbar.parentNode) {
+        navbar.parentNode.insertBefore(banner, navbar.nextSibling);
+    } else {
+        document.body.insertBefore(banner, document.body.firstChild);
+    }
+
+    return banner;
+}
+
+function createNavInstallLink() {
+    if (!navMenu || navMenu.querySelector('.install-nav-item')) {
+        return null;
+    }
+
+    const listItem = document.createElement('li');
+    listItem.className = 'install-nav-item';
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'install-nav-btn';
+    button.innerHTML = '<i class="fas fa-mobile-alt"></i> Install BRIDAPS';
+    button.style.cssText = `
+        width: 100%;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #FDB913, #f39c12);
+        color: #102a43;
+        font-weight: 700;
+        padding: 12px 16px;
+        cursor: pointer;
+        text-align: left;
+        font-size: 0.95rem;
+    `;
+    button.addEventListener('click', async () => {
+        closeMobileMenu();
+        await handleInstallAction(button);
+    });
+
+    listItem.appendChild(button);
+    navMenu.appendChild(listItem);
+    return button;
+}
+
 function createInstallAppButton() {
     if (document.querySelector('.install-app-btn')) {
         return document.querySelector('.install-app-btn');
@@ -297,34 +425,7 @@ function createInstallAppButton() {
         max-width: calc(100vw - 32px);
     `;
 
-    button.addEventListener('click', async () => {
-        if (deferredInstallPrompt) {
-            deferredInstallPrompt.prompt();
-            const promptEvent = deferredInstallPrompt;
-            deferredInstallPrompt = null;
-            button.style.display = 'none';
-
-            try {
-                await promptEvent.userChoice;
-            } catch (error) {
-                console.warn('Install prompt was dismissed or failed.', error);
-            }
-
-            return;
-        }
-
-        if (!isInstallSupportedContext()) {
-            window.alert('App install is not available from a local file preview. Open the website from your live domain or localhost in a browser to install BRIDAPS.');
-            return;
-        }
-
-        if (isIosDevice() && !isStandaloneMode()) {
-            window.alert('On iPhone or iPad, tap Share in Safari, then choose Add to Home Screen to install this website as an app.');
-            return;
-        }
-
-        window.alert('Install becomes available when your browser supports app installation for this site. Use Chrome or Edge on Android/Desktop, or Safari Add to Home Screen on iPhone.');
-    });
+    button.addEventListener('click', () => handleInstallAction(button));
 
     document.body.appendChild(button);
     return button;
@@ -332,40 +433,77 @@ function createInstallAppButton() {
 
 function setupAppInstallPrompt() {
     const installButton = createInstallAppButton();
+    const banner = createMobileInstallBanner();
+    const navInstallButton = createNavInstallLink();
+
+    const setInstallLabels = (label, title) => {
+        installButton.innerHTML = `<i class="fas fa-mobile-alt"></i> ${label}`;
+        installButton.title = title;
+
+        if (banner) {
+            const bannerButton = banner.querySelector('.mobile-install-banner-btn');
+            if (bannerButton) {
+                bannerButton.textContent = label.startsWith('Add') ? 'Add Now' : 'Install';
+                bannerButton.title = title;
+            }
+        }
+
+        if (navInstallButton) {
+            navInstallButton.innerHTML = `<i class="fas fa-mobile-alt"></i> ${label}`;
+            navInstallButton.title = title;
+        }
+    };
+
+    const showBanner = () => {
+        if (banner) {
+            banner.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
+        }
+    };
 
     if (isStandaloneMode()) {
         installButton.style.display = 'none';
+        if (banner) {
+            banner.style.display = 'none';
+        }
+        if (navInstallButton) {
+            navInstallButton.closest('li').style.display = 'none';
+        }
         return;
     }
 
     installButton.style.display = 'block';
+    showBanner();
+    window.addEventListener('resize', showBanner);
 
     if (!isInstallSupportedContext()) {
-        installButton.innerHTML = '<i class="fas fa-mobile-alt"></i> Install BRIDAPS';
-        installButton.title = 'Open this site on localhost or HTTPS to install it as an app.';
+        setInstallLabels('Install BRIDAPS', 'Open this site on localhost or HTTPS to install it as an app.');
         return;
     }
 
     if (isIosDevice()) {
-        installButton.innerHTML = '<i class="fas fa-mobile-alt"></i> Add BRIDAPS to Home Screen';
-        installButton.title = 'Use Safari Share > Add to Home Screen.';
+        setInstallLabels('Add BRIDAPS to Home Screen', 'Use Safari Share > Add to Home Screen.');
         return;
     }
 
-    installButton.innerHTML = '<i class="fas fa-mobile-alt"></i> Install BRIDAPS';
-    installButton.title = 'Install BRIDAPS as an app on this device.';
+    setInstallLabels('Install BRIDAPS', 'Install BRIDAPS as an app on this device.');
 
     window.addEventListener('beforeinstallprompt', (event) => {
         event.preventDefault();
         deferredInstallPrompt = event;
         installButton.style.display = 'block';
-        installButton.innerHTML = '<i class="fas fa-mobile-alt"></i> Install BRIDAPS';
-        installButton.title = 'Install BRIDAPS as an app on this device.';
+        setInstallLabels('Install BRIDAPS', 'Install BRIDAPS as an app on this device.');
+        showBanner();
     });
 
     window.addEventListener('appinstalled', () => {
         deferredInstallPrompt = null;
         installButton.style.display = 'none';
+        if (banner) {
+            banner.style.display = 'none';
+        }
+        if (navInstallButton) {
+            navInstallButton.closest('li').style.display = 'none';
+        }
     });
 }
 
