@@ -280,8 +280,8 @@ function createInstallAppButton() {
     button.innerHTML = '<i class="fas fa-mobile-alt"></i> Install App';
     button.style.cssText = `
         position: fixed;
-        bottom: 30px;
-        left: 30px;
+        bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+        left: 16px;
         padding: 14px 18px;
         border: none;
         border-radius: 999px;
@@ -289,10 +289,12 @@ function createInstallAppButton() {
         color: #102a43;
         font-weight: 700;
         font-size: 0.95rem;
+        line-height: 1.2;
         cursor: pointer;
         z-index: 1001;
         display: block;
         box-shadow: 0 10px 24px rgba(16, 42, 67, 0.22);
+        max-width: calc(100vw - 32px);
     `;
 
     button.addEventListener('click', async () => {
@@ -373,7 +375,7 @@ async function registerServiceWorker() {
     }
 
     try {
-        await navigator.serviceWorker.register('/sw.js');
+        await navigator.serviceWorker.register('/sw.js?v=20260427');
     } catch (error) {
         console.warn('Service worker registration failed.', error);
     }
