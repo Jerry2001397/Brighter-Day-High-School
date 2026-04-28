@@ -392,16 +392,16 @@ async function handleInstallAction(triggerButton) {
     }
 
     if (isIosDevice() && !isStandaloneMode()) {
-        showInstallGuide();
+        window.alert('Direct install is not available on this device. Use the Installation guide button.');
         return;
     }
 
     if (isEmbeddedBrowser()) {
-        showInstallGuide();
+        window.alert('Direct install is not available in this browser. Use the Installation guide button.');
         return;
     }
 
-    window.alert('Install is not available yet in this browser session. If no install prompt appears automatically, use your browser menu and choose Install app or Add to Home Screen.');
+    window.alert('Install is not available in this browser session right now.');
 }
 
 function closeMobileMenu() {
