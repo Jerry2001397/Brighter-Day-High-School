@@ -269,17 +269,115 @@ function isStandaloneMode() {
     return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 }
 
+function isEmbeddedBrowser() {
+    return /electron/i.test(window.navigator.userAgent);
+}
+
+function showInstallGuide() {
+    let overlay = document.querySelector('.install-guide-overlay');
+
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.className = 'install-guide-overlay';
+        overlay.style.cssText = `
+            position: fixed;
+            inset: 0;
+            background: rgba(16, 42, 67, 0.72);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+            z-index: 2000;
+        `;
+
+        const card = document.createElement('div');
+        card.style.cssText = `
+            width: min(100%, 460px);
+            border-radius: 24px;
+            background: #ffffff;
+            color: #102a43;
+            padding: 22px 20px;
+            box-shadow: 0 24px 48px rgba(16, 42, 67, 0.24);
+        `;
+
+        const title = document.createElement('h3');
+        title.textContent = 'BRIDAPS APP Installation Guide';
+        title.style.cssText = 'margin:0 0 10px; font-size:1.15rem;';
+
+        const intro = document.createElement('p');
+        intro.textContent = 'Use the steps below to install BRIDAPS APP on iPhone or Android.';
+        intro.style.cssText = 'margin:0 0 14px; line-height:1.5; font-size:0.95rem;';
+
+        const iphoneTitle = document.createElement('h4');
+        iphoneTitle.textContent = 'iPhone / iPad';
+        iphoneTitle.style.cssText = 'margin:0 0 8px; font-size:1rem;';
+
+        const iphoneSteps = document.createElement('ol');
+        iphoneSteps.style.cssText = 'margin:0 0 16px; padding-left:20px; line-height:1.6; font-size:0.95rem;';
+        iphoneSteps.innerHTML = '<li>Open this site in Safari.</li><li>Tap the Share button.</li><li>Scroll down and tap Add to Home Screen.</li><li>Tap Add at the top-right to finish installing BRIDAPS APP.</li>';
+
+        const androidTitle = document.createElement('h4');
+        androidTitle.textContent = 'Android';
+        androidTitle.style.cssText = 'margin:0 0 8px; font-size:1rem;';
+
+        const androidSteps = document.createElement('ol');
+        androidSteps.style.cssText = 'margin:0; padding-left:20px; line-height:1.6; font-size:0.95rem;';
+        androidSteps.innerHTML = '<li>Open this site in Chrome or Edge.</li><li>Tap Install when your browser shows the install prompt.</li><li>If no prompt appears, open the browser menu and tap Install app or Add to Home screen.</li><li>Confirm to finish installing BRIDAPS APP.</li>';
+
+        const note = document.createElement('p');
+        note.textContent = 'Safari cannot open the Add to Home Screen screen directly from a website.';
+        note.style.cssText = 'margin:14px 0 0; line-height:1.5; font-size:0.9rem; color:#486581;';
+
+        const actions = document.createElement('div');
+        actions.style.cssText = 'display:flex; justify-content:flex-end; gap:10px; margin-top:18px;';
+
+        const closeButton = document.createElement('button');
+        closeButton.type = 'button';
+        closeButton.textContent = 'Close';
+        closeButton.style.cssText = `
+            border: none;
+            border-radius: 999px;
+            background: #102a43;
+            color: #ffffff;
+            padding: 10px 16px;
+            font-weight: 700;
+            cursor: pointer;
+        `;
+
+        const hideGuide = () => {
+            overlay.style.display = 'none';
+        };
+
+        closeButton.addEventListener('click', hideGuide);
+        overlay.addEventListener('click', (event) => {
+            if (event.target === overlay) {
+                hideGuide();
+            }
+        });
+
+        actions.appendChild(closeButton);
+        card.appendChild(title);
+        card.appendChild(intro);
+        card.appendChild(iphoneTitle);
+        card.appendChild(iphoneSteps);
+        card.appendChild(androidTitle);
+        card.appendChild(androidSteps);
+        card.appendChild(note);
+        card.appendChild(actions);
+        overlay.appendChild(card);
+        document.body.appendChild(overlay);
+    }
+
+    overlay.style.display = 'flex';
+}
+
 async function handleInstallAction(triggerButton) {
     if (deferredInstallPrompt) {
-        deferredInstallPrompt.prompt();
         const promptEvent = deferredInstallPrompt;
         deferredInstallPrompt = null;
 
-        if (triggerButton) {
-            triggerButton.style.display = 'none';
-        }
-
         try {
+            await promptEvent.prompt();
             await promptEvent.userChoice;
         } catch (error) {
             console.warn('Install prompt was dismissed or failed.', error);
@@ -294,11 +392,16 @@ async function handleInstallAction(triggerButton) {
     }
 
     if (isIosDevice() && !isStandaloneMode()) {
-        window.alert('On iPhone or iPad, tap Share in Safari, then choose Add to Home Screen to install this website as an app.');
+        showInstallGuide();
         return;
     }
 
-    window.alert('Install becomes available when your browser supports app installation for this site. Use Chrome or Edge on Android/Desktop, or Safari Add to Home Screen on iPhone.');
+    if (isEmbeddedBrowser()) {
+        window.alert('Install is not available inside the VS Code preview browser. Open http://localhost:3000 in Chrome, Edge, or Safari to test app installation.');
+        return;
+    }
+
+    window.alert('Install is not available yet in this browser session. If no install prompt appears automatically, use your browser menu and choose Install app or Add to Home Screen.');
 }
 
 function closeMobileMenu() {
@@ -316,22 +419,15 @@ function createMobileInstallBanner() {
     const banner = document.createElement('div');
     banner.className = 'mobile-install-banner';
     banner.style.cssText = `
-        position: sticky;
-        top: 76px;
-        z-index: 998;
+        position: fixed;
+        top: calc(84px + env(safe-area-inset-top, 0px));
+        right: 16px;
+        z-index: 1001;
         display: none;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        padding: 12px 16px;
-        background: linear-gradient(135deg, #102a43, #1B4F72);
-        color: #ffffff;
-        box-shadow: 0 8px 18px rgba(16, 42, 67, 0.24);
+        width: auto;
+        padding: 0;
+        background: transparent;
     `;
-
-    const text = document.createElement('div');
-    text.style.cssText = 'display:flex; flex-direction:column; gap:2px; min-width:0;';
-    text.innerHTML = '<strong style="font-size:0.95rem;">Install BRIDAPS</strong><span style="font-size:0.8rem; opacity:0.88;">Save the school website as an app on your phone.</span>';
 
     const action = document.createElement('button');
     action.type = 'button';
@@ -350,7 +446,6 @@ function createMobileInstallBanner() {
     action.textContent = 'Install';
     action.addEventListener('click', () => handleInstallAction(action));
 
-    banner.appendChild(text);
     banner.appendChild(action);
 
     const navbar = document.querySelector('.navbar');
@@ -363,83 +458,10 @@ function createMobileInstallBanner() {
     return banner;
 }
 
-function createNavInstallLink() {
-    if (!navMenu || navMenu.querySelector('.install-nav-item')) {
-        return null;
-    }
-
-    const listItem = document.createElement('li');
-    listItem.className = 'install-nav-item';
-
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'install-nav-btn';
-    button.innerHTML = '<i class="fas fa-mobile-alt"></i> Install BRIDAPS';
-    button.style.cssText = `
-        width: 100%;
-        border: none;
-        border-radius: 12px;
-        background: linear-gradient(135deg, #FDB913, #f39c12);
-        color: #102a43;
-        font-weight: 700;
-        padding: 12px 16px;
-        cursor: pointer;
-        text-align: left;
-        font-size: 0.95rem;
-    `;
-    button.addEventListener('click', async () => {
-        closeMobileMenu();
-        await handleInstallAction(button);
-    });
-
-    listItem.appendChild(button);
-    navMenu.appendChild(listItem);
-    return button;
-}
-
-function createInstallAppButton() {
-    if (document.querySelector('.install-app-btn')) {
-        return document.querySelector('.install-app-btn');
-    }
-
-    const button = document.createElement('button');
-    button.className = 'install-app-btn';
-    button.type = 'button';
-    button.innerHTML = '<i class="fas fa-mobile-alt"></i> Install App';
-    button.style.cssText = `
-        position: fixed;
-        bottom: calc(20px + env(safe-area-inset-bottom, 0px));
-        left: 16px;
-        padding: 14px 18px;
-        border: none;
-        border-radius: 999px;
-        background: linear-gradient(135deg, #FDB913, #f39c12);
-        color: #102a43;
-        font-weight: 700;
-        font-size: 0.95rem;
-        line-height: 1.2;
-        cursor: pointer;
-        z-index: 1001;
-        display: block;
-        box-shadow: 0 10px 24px rgba(16, 42, 67, 0.22);
-        max-width: calc(100vw - 32px);
-    `;
-
-    button.addEventListener('click', () => handleInstallAction(button));
-
-    document.body.appendChild(button);
-    return button;
-}
-
 function setupAppInstallPrompt() {
-    const installButton = createInstallAppButton();
     const banner = createMobileInstallBanner();
-    const navInstallButton = createNavInstallLink();
 
     const setInstallLabels = (label, title) => {
-        installButton.innerHTML = `<i class="fas fa-mobile-alt"></i> ${label}`;
-        installButton.title = title;
-
         if (banner) {
             const bannerButton = banner.querySelector('.mobile-install-banner-btn');
             if (bannerButton) {
@@ -447,62 +469,46 @@ function setupAppInstallPrompt() {
                 bannerButton.title = title;
             }
         }
-
-        if (navInstallButton) {
-            navInstallButton.innerHTML = `<i class="fas fa-mobile-alt"></i> ${label}`;
-            navInstallButton.title = title;
-        }
     };
 
     const showBanner = () => {
         if (banner) {
-            banner.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
+            banner.style.display = 'flex';
         }
     };
 
     if (isStandaloneMode()) {
-        installButton.style.display = 'none';
         if (banner) {
             banner.style.display = 'none';
-        }
-        if (navInstallButton) {
-            navInstallButton.closest('li').style.display = 'none';
         }
         return;
     }
 
-    installButton.style.display = 'block';
     showBanner();
-    window.addEventListener('resize', showBanner);
 
     if (!isInstallSupportedContext()) {
-        setInstallLabels('Install BRIDAPS', 'Open this site on localhost or HTTPS to install it as an app.');
+        setInstallLabels('Install BRIDAPS APP', 'Open this site on localhost or HTTPS to install it as an app.');
         return;
     }
 
     if (isIosDevice()) {
-        setInstallLabels('Add BRIDAPS to Home Screen', 'Use Safari Share > Add to Home Screen.');
+        setInstallLabels('Install BRIDAPS APP', 'Use Safari Share > Add to Home Screen.');
         return;
     }
 
-    setInstallLabels('Install BRIDAPS', 'Install BRIDAPS as an app on this device.');
+    setInstallLabels('Install BRIDAPS APP', 'Install BRIDAPS as an app on this device.');
 
     window.addEventListener('beforeinstallprompt', (event) => {
         event.preventDefault();
         deferredInstallPrompt = event;
-        installButton.style.display = 'block';
-        setInstallLabels('Install BRIDAPS', 'Install BRIDAPS as an app on this device.');
+        setInstallLabels('Install BRIDAPS APP', 'Install BRIDAPS as an app on this device.');
         showBanner();
     });
 
     window.addEventListener('appinstalled', () => {
         deferredInstallPrompt = null;
-        installButton.style.display = 'none';
         if (banner) {
             banner.style.display = 'none';
-        }
-        if (navInstallButton) {
-            navInstallButton.closest('li').style.display = 'none';
         }
     });
 }
@@ -513,7 +519,7 @@ async function registerServiceWorker() {
     }
 
     try {
-        await navigator.serviceWorker.register('/sw.js?v=20260427');
+        await navigator.serviceWorker.register('/sw.js?v=20260428');
     } catch (error) {
         console.warn('Service worker registration failed.', error);
     }
