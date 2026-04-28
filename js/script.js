@@ -397,7 +397,7 @@ async function handleInstallAction(triggerButton) {
     }
 
     if (isEmbeddedBrowser()) {
-        window.alert('Install is not available inside the VS Code preview browser. Open http://localhost:3000 in Chrome, Edge, or Safari to test app installation.');
+        showInstallGuide();
         return;
     }
 
@@ -420,14 +420,43 @@ function createMobileInstallBanner() {
     banner.className = 'mobile-install-banner';
     banner.style.cssText = `
         position: fixed;
-        top: calc(84px + env(safe-area-inset-top, 0px));
-        right: 16px;
+        top: env(safe-area-inset-top, 0px);
+        left: 0;
+        right: 0;
         z-index: 1001;
         display: none;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
         width: auto;
-        padding: 0;
-        background: transparent;
+        padding: 12px 16px;
+        border-radius: 0;
+        background: linear-gradient(135deg, #102a43, #1B4F72);
+        color: #ffffff;
+        box-shadow: 0 10px 24px rgba(16, 42, 67, 0.24);
     `;
+
+    const text = document.createElement('div');
+    text.style.cssText = 'display:flex; flex:1; flex-direction:column; align-items:flex-start; gap:4px; min-width:0;';
+    text.innerHTML = '<strong style="font-size:0.95rem;">Install BRIDAPS APP</strong><span style="font-size:0.8rem; opacity:0.88;">Save the school website as an app on your phone.</span>';
+
+    const guideButton = document.createElement('button');
+    guideButton.type = 'button';
+    guideButton.className = 'mobile-install-guide-btn';
+    guideButton.style.cssText = `
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 999px;
+        background: transparent;
+        color: #ffffff;
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 5px 10px;
+        cursor: pointer;
+        white-space: nowrap;
+        flex-shrink: 0;
+    `;
+    guideButton.textContent = 'Installation guide';
+    guideButton.addEventListener('click', showInstallGuide);
 
     const action = document.createElement('button');
     action.type = 'button';
@@ -446,6 +475,8 @@ function createMobileInstallBanner() {
     action.textContent = 'Install';
     action.addEventListener('click', () => handleInstallAction(action));
 
+    text.appendChild(guideButton);
+    banner.appendChild(text);
     banner.appendChild(action);
 
     const navbar = document.querySelector('.navbar');
@@ -460,6 +491,16 @@ function createMobileInstallBanner() {
 
 function setupAppInstallPrompt() {
     const banner = createMobileInstallBanner();
+    const navbar = document.querySelector('.navbar');
+
+    const updateBannerPlacement = () => {
+        if (!banner) {
+            return;
+        }
+
+        const navbarHeight = navbar ? navbar.offsetHeight : 0;
+        banner.style.top = `calc(${navbarHeight}px + env(safe-area-inset-top, 0px))`;
+    };
 
     const setInstallLabels = (label, title) => {
         if (banner) {
@@ -473,6 +514,7 @@ function setupAppInstallPrompt() {
 
     const showBanner = () => {
         if (banner) {
+            updateBannerPlacement();
             banner.style.display = 'flex';
         }
     };
@@ -485,6 +527,7 @@ function setupAppInstallPrompt() {
     }
 
     showBanner();
+    window.addEventListener('resize', updateBannerPlacement);
 
     if (!isInstallSupportedContext()) {
         setInstallLabels('Install BRIDAPS APP', 'Open this site on localhost or HTTPS to install it as an app.');
