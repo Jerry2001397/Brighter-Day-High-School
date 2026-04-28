@@ -423,6 +423,7 @@ function createMobileInstallBanner() {
         top: env(safe-area-inset-top, 0px);
         left: 0;
         right: 0;
+        margin-top: 0;
         z-index: 1001;
         display: none;
         align-items: center;
@@ -499,7 +500,7 @@ function setupAppInstallPrompt() {
         }
 
         const navbarHeight = navbar ? navbar.offsetHeight : 0;
-        banner.style.top = `calc(${navbarHeight}px + env(safe-area-inset-top, 0px))`;
+        banner.style.marginTop = `${navbarHeight}px`;
     };
 
     const setInstallLabels = (label, title) => {
@@ -528,6 +529,7 @@ function setupAppInstallPrompt() {
 
     showBanner();
     window.addEventListener('resize', updateBannerPlacement);
+    window.addEventListener('load', showBanner);
 
     if (!isInstallSupportedContext()) {
         setInstallLabels('Install BRIDAPS APP', 'Open this site on localhost or HTTPS to install it as an app.');
