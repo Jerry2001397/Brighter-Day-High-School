@@ -419,7 +419,7 @@ function createMobileInstallBanner() {
     const banner = document.createElement('div');
     banner.className = 'mobile-install-banner';
     banner.style.cssText = `
-        position: fixed;
+        position: sticky;
         top: env(safe-area-inset-top, 0px);
         left: 0;
         right: 0;
@@ -427,18 +427,18 @@ function createMobileInstallBanner() {
         display: none;
         align-items: center;
         justify-content: space-between;
-        gap: 12px;
+        gap: 10px;
         width: auto;
-        padding: 12px 16px;
+        padding: 8px 12px;
         border-radius: 0;
         background: linear-gradient(135deg, #102a43, #1B4F72);
         color: #ffffff;
-        box-shadow: 0 10px 24px rgba(16, 42, 67, 0.24);
+        box-shadow: 0 6px 14px rgba(16, 42, 67, 0.18);
     `;
 
     const text = document.createElement('div');
     text.style.cssText = 'display:flex; flex:1; flex-direction:column; align-items:flex-start; gap:4px; min-width:0;';
-    text.innerHTML = '<strong style="font-size:0.95rem;">Install BRIDAPS APP</strong><span style="font-size:0.8rem; opacity:0.88;">Save the school website as an app on your phone.</span>';
+    text.innerHTML = '<strong style="font-size:0.88rem; line-height:1.1;">Install BRIDAPS APP</strong><span style="font-size:0.74rem; opacity:0.88; line-height:1.2;">Save the school website as an app on your phone.</span>';
 
     const guideButton = document.createElement('button');
     guideButton.type = 'button';
@@ -448,9 +448,9 @@ function createMobileInstallBanner() {
         border-radius: 999px;
         background: transparent;
         color: #ffffff;
-        font-size: 0.75rem;
+        font-size: 0.72rem;
         font-weight: 600;
-        padding: 5px 10px;
+        padding: 4px 9px;
         cursor: pointer;
         white-space: nowrap;
         flex-shrink: 0;
@@ -467,7 +467,7 @@ function createMobileInstallBanner() {
         background: #FDB913;
         color: #102a43;
         font-weight: 700;
-        padding: 10px 14px;
+        padding: 8px 12px;
         cursor: pointer;
         white-space: nowrap;
         flex-shrink: 0;
