@@ -500,7 +500,7 @@ function setupAppInstallPrompt() {
         }
 
         const navbarHeight = navbar ? navbar.offsetHeight : 0;
-        banner.style.marginTop = `${navbarHeight}px`;
+        banner.style.marginTop = `${Math.max(navbarHeight - 6, 0)}px`;
     };
 
     const setInstallLabels = (label, title) => {
