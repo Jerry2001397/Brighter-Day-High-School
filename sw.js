@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bridaps-pwa-v2';
+const CACHE_NAME = 'bridaps-pwa-v3';
 const CORE_ASSETS = [
     '/',
     '/index.html',
@@ -37,6 +37,24 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
     if (event.request.method !== 'GET') {
+        return;
+    }
+
+    const requestUrl = new URL(event.request.url);
+
+    if (requestUrl.origin === self.location.origin) {
+        event.respondWith(
+            fetch(event.request)
+                .then((networkResponse) => {
+                    if (networkResponse && networkResponse.status === 200) {
+                        const responseToCache = networkResponse.clone();
+                        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
+                    }
+
+                    return networkResponse;
+                })
+                .catch(() => caches.match(event.request).then((cachedResponse) => cachedResponse || caches.match('/index.html')))
+        );
         return;
     }
 
