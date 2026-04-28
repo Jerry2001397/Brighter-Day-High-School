@@ -308,21 +308,21 @@ function showInstallGuide() {
         intro.textContent = 'Use the steps below to install BRIDAPS APP on iPhone or Android.';
         intro.style.cssText = 'margin:0 0 14px; line-height:1.5; font-size:0.95rem;';
 
-        const iphoneTitle = document.createElement('h4');
-        iphoneTitle.textContent = 'iPhone / iPad';
-        iphoneTitle.style.cssText = 'margin:0 0 8px; font-size:1rem;';
-
-        const iphoneSteps = document.createElement('ol');
-        iphoneSteps.style.cssText = 'margin:0 0 16px; padding-left:20px; line-height:1.6; font-size:0.95rem;';
-        iphoneSteps.innerHTML = '<li>Open this site in Safari.</li><li>Tap the Share button.</li><li>Scroll down and tap Add to Home Screen.</li><li>Tap Add at the top-right to finish installing BRIDAPS APP.</li>';
-
         const androidTitle = document.createElement('h4');
         androidTitle.textContent = 'Android';
         androidTitle.style.cssText = 'margin:0 0 8px; font-size:1rem;';
 
         const androidSteps = document.createElement('ol');
-        androidSteps.style.cssText = 'margin:0; padding-left:20px; line-height:1.6; font-size:0.95rem;';
+        androidSteps.style.cssText = 'margin:0 0 16px; padding-left:20px; line-height:1.6; font-size:0.95rem;';
         androidSteps.innerHTML = '<li>Open this site in Chrome or Edge.</li><li>Tap Install when your browser shows the install prompt.</li><li>If no prompt appears, open the browser menu and tap Install app or Add to Home screen.</li><li>Confirm to finish installing BRIDAPS APP.</li>';
+
+        const iphoneTitle = document.createElement('h4');
+        iphoneTitle.textContent = 'iPhone / iPad';
+        iphoneTitle.style.cssText = 'margin:0 0 8px; font-size:1rem;';
+
+        const iphoneSteps = document.createElement('ol');
+        iphoneSteps.style.cssText = 'margin:0; padding-left:20px; line-height:1.6; font-size:0.95rem;';
+        iphoneSteps.innerHTML = '<li>Open this site in Safari.</li><li>Tap the Share button.</li><li>Scroll down and tap Add to Home Screen.</li><li>Tap Add at the top-right to finish installing BRIDAPS APP.</li>';
 
         const note = document.createElement('p');
         note.textContent = 'Safari cannot open the Add to Home Screen screen directly from a website.';
@@ -358,10 +358,10 @@ function showInstallGuide() {
         actions.appendChild(closeButton);
         card.appendChild(title);
         card.appendChild(intro);
-        card.appendChild(iphoneTitle);
-        card.appendChild(iphoneSteps);
         card.appendChild(androidTitle);
         card.appendChild(androidSteps);
+        card.appendChild(iphoneTitle);
+        card.appendChild(iphoneSteps);
         card.appendChild(note);
         card.appendChild(actions);
         overlay.appendChild(card);
