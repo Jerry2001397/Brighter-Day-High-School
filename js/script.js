@@ -191,6 +191,7 @@ function renderLatestHomeNews(latestNewsContainer, latestArticle) {
         : 'Latest update';
     const excerpt = latestArticle.excerpt || 'Read the latest school update on our news page.';
     const category = latestArticle.category || 'School News';
+    const authorName = latestArticle.author_name || latestArticle.author || 'Administration';
     const imageUrl = resolveHomeNewsImageUrl(latestArticle.image_url);
 
     latestNewsContainer.innerHTML = `
@@ -209,6 +210,7 @@ function renderLatestHomeNews(latestNewsContainer, latestArticle) {
                 </div>
                 <h3 class="news-title">${escapeHtml(latestArticle.title || 'Latest school news')}</h3>
                 <p class="news-excerpt">${escapeHtml(excerpt)}</p>
+                <p class="home-news-author"><i class="fas fa-user"></i> ${escapeHtml(authorName)}</p>
                 <a href="news.html${latestArticle.id ? `#news-${latestArticle.id}` : ''}" class="home-news-link-inline">
                     <i class="fas fa-arrow-right"></i> Read this article on the news page
                 </a>

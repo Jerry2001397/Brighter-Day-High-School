@@ -533,6 +533,18 @@ body {
     font-size: 1.45rem;
 }
 
+.home-news-author {
+    margin: 0 0 1rem;
+    color: var(--gray);
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.home-news-author i {
+    color: var(--primary-yellow);
+    margin-right: 0.35rem;
+}
+
 .home-news-card .news-top-meta {
     justify-content: center;
 }
@@ -2394,10 +2406,20 @@ body {
     margin-top: 0.75rem;
     color: var(--dark-grey);
     line-height: 1.7;
+    text-align: left;
 }
 
 .news-full-content p {
     margin-bottom: 0.75rem;
+    text-indent: 1.5rem;
+}
+
+.news-full-content p:last-child {
+    margin-bottom: 0;
+}
+
+.news-full-content br {
+    content: '';
 }
 
 .news-meta {

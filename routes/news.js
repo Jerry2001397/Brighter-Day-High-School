@@ -88,6 +88,36 @@ function resolveImageUrlForResponse(imageUrl) {
     return normalized;
 }
 
+function escapeHtml(value) {
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function formatNewsContent(content) {
+    if (!content) {
+        return '';
+    }
+
+    const normalizedContent = String(content).replace(/\r\n/g, '\n').trim();
+    if (!normalizedContent) {
+        return '';
+    }
+
+    // Preserve existing HTML content created previously.
+    if (/<\/?[a-z][\s\S]*>/i.test(normalizedContent)) {
+        return normalizedContent;
+    }
+
+    return normalizedContent
+        .split(/\n\s*\n/)
+        .map((paragraph) => `<p>${escapeHtml(paragraph).replace(/\n/g, '<br>')}</p>`)
+        .join('');
+}
+
 // Configure multer for memory storage (buffer upload)
 const upload = multer({
     storage: multer.memoryStorage(),
@@ -202,6 +232,7 @@ router.get('/api/admin/articles', isAuthenticated, async (req, res) => {
 
 router.post('/api/admin/articles', isAuthenticated, upload.single('image'), async (req, res) => {
     const { title, category, excerpt, content, published_date, is_published, author_name, author_position } = req.body;
+    const formattedContent = formatNewsContent(content);
 
     let image_url = null;
     if (req.file) {
@@ -223,7 +254,7 @@ router.post('/api/admin/articles', isAuthenticated, upload.single('image'), asyn
             INSERT INTO news_articles (title, category, excerpt, content, image_url, author_id, published_date, is_published, author_name, author_position)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
             RETURNING id
-        `, [title, category, excerpt, content, image_url, req.session.adminId, published_date, is_published || true, author_name, author_position]);
+        `, [title, category, excerpt, formattedContent, image_url, req.session.adminId, published_date, is_published || true, author_name, author_position]);
 
         res.json({ success: true, id: result.rows[0].id, message: 'Article created successfully' });
     } catch (error) {
@@ -236,6 +267,7 @@ router.post('/api/admin/articles', isAuthenticated, upload.single('image'), asyn
 
 router.put('/api/admin/articles/:id', isAuthenticated, upload.single('image'), async (req, res) => {
     const { title, category, excerpt, content, published_date, is_published, author_name, author_position } = req.body;
+    const formattedContent = formatNewsContent(content);
     let image_url = req.body.existing_image;
     if (req.file) {
         // Upload to Google Cloud Storage
@@ -257,7 +289,7 @@ router.put('/api/admin/articles/:id', isAuthenticated, upload.single('image'), a
             SET title = $1, category = $2, excerpt = $3, content = $4, 
                 image_url = $5, published_date = $6, is_published = $7, author_name = $8, author_position = $9
             WHERE id = $10
-        `, [title, category, excerpt, content, image_url, published_date, is_published, author_name, author_position, req.params.id]);
+        `, [title, category, excerpt, formattedContent, image_url, published_date, is_published, author_name, author_position, req.params.id]);
 
         res.json({ success: true, message: 'Article updated successfully' });
     } catch (error) {
