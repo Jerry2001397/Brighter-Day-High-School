@@ -163,6 +163,60 @@ function resolveHomeNewsImageUrl(imageUrl) {
     return encodePublicPath(`/${normalized.replace(/^\.\//, '')}`);
 }
 
+function getStoredLatestHomeNews() {
+    try {
+        const storedValue = window.localStorage.getItem('bridaps-latest-home-news');
+        return storedValue ? JSON.parse(storedValue) : null;
+    } catch (error) {
+        console.warn('Unable to read cached home news:', error);
+        return null;
+    }
+}
+
+function storeLatestHomeNews(article) {
+    try {
+        window.localStorage.setItem('bridaps-latest-home-news', JSON.stringify(article));
+    } catch (error) {
+        console.warn('Unable to cache home news:', error);
+    }
+}
+
+function renderLatestHomeNews(latestNewsContainer, latestArticle) {
+    const publishedDate = latestArticle.published_date
+        ? new Date(latestArticle.published_date).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+        })
+        : 'Latest update';
+    const excerpt = latestArticle.excerpt || 'Read the latest school update on our news page.';
+    const category = latestArticle.category || 'School News';
+    const imageUrl = resolveHomeNewsImageUrl(latestArticle.image_url);
+
+    latestNewsContainer.innerHTML = `
+        <article class="news-card home-news-card" id="home-news-${latestArticle.id || 'latest'}">
+            <div class="news-image">
+                <img src="${imageUrl}" alt="${escapeHtml(latestArticle.title || 'Latest school news')}" loading="lazy">
+            </div>
+            <div class="news-content">
+                <div class="news-top-meta">
+                    <div class="news-category">
+                        <i class="fas fa-tag"></i> ${escapeHtml(category)}
+                    </div>
+                    <div class="news-inline-date">
+                        <i class="fas fa-calendar-alt"></i> ${publishedDate}
+                    </div>
+                </div>
+                <h3 class="news-title">${escapeHtml(latestArticle.title || 'Latest school news')}</h3>
+                <p class="news-excerpt">${escapeHtml(excerpt)}</p>
+                <a href="news.html${latestArticle.id ? `#news-${latestArticle.id}` : ''}" class="home-news-link-inline">
+                    <i class="fas fa-arrow-right"></i> Read this article on the news page
+                </a>
+            </div>
+        </article>
+    `;
+}
+
 async function loadLatestHomeNews() {
     const latestNewsContainer = document.getElementById('homeLatestNews');
     if (!latestNewsContainer) {
@@ -190,41 +244,16 @@ async function loadLatestHomeNews() {
             return;
         }
 
-        const publishedDate = latestArticle.published_date
-            ? new Date(latestArticle.published_date).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric'
-            })
-            : 'Latest update';
-        const excerpt = latestArticle.excerpt || 'Read the latest school update on our news page.';
-        const category = latestArticle.category || 'School News';
-        const imageUrl = resolveHomeNewsImageUrl(latestArticle.image_url);
-
-        latestNewsContainer.innerHTML = `
-            <article class="news-card home-news-card" id="home-news-${latestArticle.id}">
-                <div class="news-image">
-                    <img src="${imageUrl}" alt="${escapeHtml(latestArticle.title)}" loading="lazy">
-                </div>
-                <div class="news-content">
-                    <div class="news-top-meta">
-                        <div class="news-category">
-                            <i class="fas fa-tag"></i> ${escapeHtml(category)}
-                        </div>
-                        <div class="news-inline-date">
-                            <i class="fas fa-calendar-alt"></i> ${publishedDate}
-                        </div>
-                    </div>
-                    <h3 class="news-title">${escapeHtml(latestArticle.title)}</h3>
-                    <p class="news-excerpt">${escapeHtml(excerpt)}</p>
-                    <a href="news.html#news-${latestArticle.id}" class="home-news-link-inline">
-                        <i class="fas fa-arrow-right"></i> Read this article on the news page
-                    </a>
-                </div>
-            </article>
-        `;
+        storeLatestHomeNews(latestArticle);
+        renderLatestHomeNews(latestNewsContainer, latestArticle);
     } catch (error) {
         console.error('Error loading latest home news:', error);
+        const storedArticle = getStoredLatestHomeNews();
+        if (storedArticle) {
+            renderLatestHomeNews(latestNewsContainer, storedArticle);
+            return;
+        }
+
         latestNewsContainer.innerHTML = `
             <article class="news-card home-news-card">
                 <div class="home-news-empty">
