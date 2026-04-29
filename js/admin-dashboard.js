@@ -199,7 +199,10 @@ function closeNewsModal() {
 
 async function loadNewsForEdit(id) {
     try {
-        const response = await fetch(`/news/api/articles/${id}`);
+        const response = await fetch(`/news/api/admin/articles/${id}`);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch article: ${response.status}`);
+        }
         const article = await response.json();
         
         document.getElementById('newsId').value = article.id;

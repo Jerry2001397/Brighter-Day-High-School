@@ -228,6 +228,34 @@ router.get('/api/admin/articles', isAuthenticated, async (req, res) => {
     }
 });
 
+// Get single article for admin editing
+router.get('/api/admin/articles/:id', isAuthenticated, async (req, res) => {
+    try {
+        const result = await db.query(`
+            SELECT 
+                n.id, n.title, n.category, n.excerpt, n.content,
+                n.image_url, n.published_date, n.is_published,
+                n.author_name, n.author_position,
+                a.full_name as author
+            FROM news_articles n
+            LEFT JOIN admin_users a ON n.author_id = a.id
+            WHERE n.id = $1
+        `, [req.params.id]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Article not found' });
+        }
+
+        res.json({
+            ...result.rows[0],
+            image_url: resolveImageUrlForResponse(result.rows[0].image_url)
+        });
+    } catch (error) {
+        console.error('Fetch admin article error:', error);
+        res.status(500).json({ error: 'Failed to fetch article' });
+    }
+});
+
 // Create new article
 
 router.post('/api/admin/articles', isAuthenticated, upload.single('image'), async (req, res) => {
