@@ -210,7 +210,7 @@ function renderLatestHomeNews(latestNewsContainer, latestArticle) {
                 </div>
                 <h3 class="news-title">${escapeHtml(latestArticle.title || 'Latest school news')}</h3>
                 <p class="news-excerpt">${escapeHtml(excerpt)}</p>
-                <p class="home-news-author"><i class="fas fa-user"></i> ${escapeHtml(authorName)}</p>
+                <p class="home-news-author"><i class="fas fa-user"></i> by ${escapeHtml(authorName)}</p>
                 <a href="news.html${latestArticle.id ? `#news-${latestArticle.id}` : ''}" class="home-news-link-inline">
                     <i class="fas fa-arrow-right"></i> Read this article on the news page
                 </a>
@@ -246,8 +246,15 @@ async function loadLatestHomeNews() {
             return;
         }
 
-        storeLatestHomeNews(latestArticle);
-        renderLatestHomeNews(latestNewsContainer, latestArticle);
+        const articleResponse = await fetch(`/news/api/articles/${latestArticle.id}`);
+        if (!articleResponse.ok) {
+            throw new Error(`Failed to load latest article: ${articleResponse.status}`);
+        }
+
+        const articleWithViewUpdate = await articleResponse.json();
+
+        storeLatestHomeNews(articleWithViewUpdate);
+        renderLatestHomeNews(latestNewsContainer, articleWithViewUpdate);
     } catch (error) {
         console.error('Error loading latest home news:', error);
         const storedArticle = getStoredLatestHomeNews();
