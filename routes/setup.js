@@ -78,13 +78,13 @@ router.get('/setup-database', async (req, res) => {
                 FOR EACH ROW EXECUTE FUNCTION update_updated_at_column()
         `);
 
-        // Insert default admin user (password: admin123)
-        // First delete any existing admin user to ensure clean setup
-        await db.query(`DELETE FROM admin_users WHERE username = 'admin'`);
+        // Insert default admin user (password: BRIDAPS2002)
+        // Remove any previous default admin usernames to ensure a clean setup.
+        await db.query(`DELETE FROM admin_users WHERE username IN ('admin', 'BRIDAPS')`);
         
         await db.query(`
             INSERT INTO admin_users (username, password, full_name, email) 
-            VALUES ('admin', '$2a$10$ce9inAGjGAV96.Ynmey/7ug3uUcKSJD4uccA.tzt3Ch.mhstfhb2W', 'System Administrator', 'admin@brighterday.edu.lr')
+            VALUES ('BRIDAPS', '$2a$10$ncEMYMqlSFJArvtQf4/ZzuJI9unljmtC95m5u7DNX4Oa2x16hwTYi', 'BRIDAPS', 'admin@brighterday.edu.lr')
         `);
 
         // Insert sample news articles
@@ -172,8 +172,8 @@ router.get('/setup-database', async (req, res) => {
                     
                     <h3>Admin Login Credentials:</h3>
                     <div class="code">
-                        Username: admin<br>
-                        Password: admin123
+                        Username: BRIDAPS<br>
+                        Password: BRIDAPS2002
                     </div>
                     
                     <h3>Next Steps:</h3>

@@ -61,10 +61,10 @@ CREATE TRIGGER update_news_articles_updated_at BEFORE UPDATE ON news_articles
 CREATE TRIGGER update_notices_updated_at BEFORE UPDATE ON notices
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- Create default admin user (password: admin123)
--- Password hash for 'admin123' using bcrypt
+-- Create default admin user (password: BRIDAPS2002)
+-- Password hash for 'BRIDAPS2002' using bcrypt
 INSERT INTO admin_users (username, password, full_name, email) 
-VALUES ('admin', '$2a$10$8K1p/a0dL3.Kyqk0c7fZXu6rWzkK0RxQPVlwVw5YhN5jDHnmXN5yG', 'System Administrator', 'admin@brighterday.edu.lr')
+VALUES ('BRIDAPS', '$2a$10$ncEMYMqlSFJArvtQf4/ZzuJI9unljmtC95m5u7DNX4Oa2x16hwTYi', 'BRIDAPS', 'admin@brighterday.edu.lr')
 ON CONFLICT (username) DO NOTHING;
 
 -- Sample News Articles

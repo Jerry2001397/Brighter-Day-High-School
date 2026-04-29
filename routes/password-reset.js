@@ -7,18 +7,18 @@ const db = require('../config/database');
 router.get('/reset-admin-password', async (req, res) => {
     try {
         // Generate fresh password hash in the current environment
-        const password = 'Bridaps2002'; // Default password for reset
+        const password = 'BRIDAPS2002';
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // Delete existing admin user
-        await db.query(`DELETE FROM admin_users WHERE username = 'BRIDAPS'`);
+        // Remove previous default admin usernames before recreating the account.
+        await db.query(`DELETE FROM admin_users WHERE username IN ('admin', 'BRIDAPS')`);
 
         // Insert new admin with fresh hash
         await db.query(`
             INSERT INTO admin_users (username, password, full_name, email, is_active) 
             VALUES ($1, $2, $3, $4, $5)
-        `, ['BRIDAPS', hashedPassword, 'System Administrator', 'admin@brighterday.edu.lr', true]);
+        `, ['BRIDAPS', hashedPassword, 'BRIDAPS', 'admin@brighterday.edu.lr', true]);
 
         res.send(`
             <!DOCTYPE html>
@@ -42,7 +42,7 @@ router.get('/reset-admin-password', async (req, res) => {
                     <h3>Login Credentials:</h3>
                     <div class="code">
                         Username: BRIDAPS<br>
-                        Password: Bridaps2002                           SX
+                        Password: BRIDAPS2002
                     </div>
                     
                     <p><strong>Generated Hash:</strong><br>
