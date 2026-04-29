@@ -128,6 +128,118 @@ document.querySelectorAll('.nav-menu a').forEach(link => {
     }
 });
 
+function escapeHtml(value) {
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function encodePublicPath(url) {
+    if (!url) {
+        return url;
+    }
+
+    return encodeURI(url).replace(/#/g, '%23');
+}
+
+function resolveHomeNewsImageUrl(imageUrl) {
+    const fallbackImage = 'BRIDAPS IMAGES/School logo.png';
+    if (!imageUrl) {
+        return fallbackImage;
+    }
+
+    const normalized = String(imageUrl).trim().replace(/\\/g, '/');
+    if (!normalized) {
+        return fallbackImage;
+    }
+
+    if (/^https?:\/\//i.test(normalized) || normalized.startsWith('/')) {
+        return encodePublicPath(normalized);
+    }
+
+    return encodePublicPath(`/${normalized.replace(/^\.\//, '')}`);
+}
+
+async function loadLatestHomeNews() {
+    const latestNewsContainer = document.getElementById('homeLatestNews');
+    if (!latestNewsContainer) {
+        return;
+    }
+
+    try {
+        const response = await fetch('/news/api/articles');
+        if (!response.ok) {
+            throw new Error(`Failed to load latest news: ${response.status}`);
+        }
+
+        const articles = await response.json();
+        const latestArticle = Array.isArray(articles) ? articles[0] : null;
+
+        if (!latestArticle) {
+            latestNewsContainer.innerHTML = `
+                <article class="news-card home-news-card">
+                    <div class="home-news-empty">
+                        <i class="fas fa-newspaper" style="font-size: 2.25rem; margin-bottom: 0.75rem; opacity: 0.45;"></i>
+                        <p>No news article has been published yet. Visit the news page for future updates.</p>
+                    </div>
+                </article>
+            `;
+            return;
+        }
+
+        const publishedDate = latestArticle.published_date
+            ? new Date(latestArticle.published_date).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            })
+            : 'Latest update';
+        const excerpt = latestArticle.excerpt || 'Read the latest school update on our news page.';
+        const category = latestArticle.category || 'School News';
+        const imageUrl = resolveHomeNewsImageUrl(latestArticle.image_url);
+
+        latestNewsContainer.innerHTML = `
+            <article class="news-card home-news-card" id="home-news-${latestArticle.id}">
+                <div class="news-image">
+                    <img src="${imageUrl}" alt="${escapeHtml(latestArticle.title)}" loading="lazy">
+                </div>
+                <div class="news-content">
+                    <div class="news-top-meta">
+                        <div class="news-category">
+                            <i class="fas fa-tag"></i> ${escapeHtml(category)}
+                        </div>
+                        <div class="news-inline-date">
+                            <i class="fas fa-calendar-alt"></i> ${publishedDate}
+                        </div>
+                    </div>
+                    <h3 class="news-title">${escapeHtml(latestArticle.title)}</h3>
+                    <p class="news-excerpt">${escapeHtml(excerpt)}</p>
+                    <a href="news.html#news-${latestArticle.id}" class="home-news-link-inline">
+                        <i class="fas fa-arrow-right"></i> Read this article on the news page
+                    </a>
+                </div>
+            </article>
+        `;
+    } catch (error) {
+        console.error('Error loading latest home news:', error);
+        latestNewsContainer.innerHTML = `
+            <article class="news-card home-news-card">
+                <div class="home-news-empty">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 0.75rem; color: #c0392b;"></i>
+                    <p>Latest news could not be loaded right now. You can still open the full news page.</p>
+                </div>
+            </article>
+        `;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadLatestHomeNews();
+});
+
 // Scroll to top button (optional enhancement)
 const createScrollTopButton = () => {
     const button = document.createElement('button');
